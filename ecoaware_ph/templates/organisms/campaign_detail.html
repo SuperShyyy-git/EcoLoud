@@ -261,7 +261,7 @@
 
                     {% if campaign.participants.exists %}
                     <div class="flex -space-x-3 overflow-hidden mb-3">
-                        {% for participant in campaign.participants.all|slice:":5" %}
+                        {% for participant in recent_participants %}
                         <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border-2 border-white flex items-center justify-center text-white text-xs font-bold"
                             title="{{ participant.username }}">
                             {{ participant.username.0|upper }}

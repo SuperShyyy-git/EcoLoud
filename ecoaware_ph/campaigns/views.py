@@ -19,8 +19,16 @@ def campaign_list(request):
 def campaign_detail(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
     is_admin = request.user.is_staff
+    
+    # Get participants with current user first if applicable
+    participants = list(campaign.participants.all())
+    if request.user.is_authenticated and request.user in participants:
+        participants.remove(request.user)
+        participants.insert(0, request.user)
+        
     return render(request, 'organisms/campaign_detail.html', {
         'campaign': campaign,
+        'recent_participants': participants[:5],
         'is_admin': is_admin
     })
 
