@@ -8,7 +8,7 @@ services:
     name: ecoaware_ph
     env: python
     buildCommand: "./build.sh"
-    startCommand: "gunicorn ecoaware_ph.wsgi:application"
+    startCommand: "cd ecoaware_ph && gunicorn ecoaware_ph.wsgi:application"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
