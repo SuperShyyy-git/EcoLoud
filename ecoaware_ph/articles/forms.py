@@ -1,5 +1,5 @@
 from django import forms
-from .models import Article, Category, Tag, Comment
+from .models import Article, Category, Comment
 
 
 # =========================================================
@@ -9,7 +9,7 @@ class ArticleForm(forms.ModelForm):
     class Meta:
         model = Article
         # Author, slug, views, timestamps are excluded (set automatically)
-        fields = ['title', 'content', 'excerpt', 'featured_image', 'category', 'tags', 'status']
+        fields = ['title', 'content', 'excerpt', 'featured_image', 'category', 'status']
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -25,9 +25,6 @@ class ArticleForm(forms.ModelForm):
                 'class': 'form-control',
             }),
             'category': forms.Select(attrs={
-                'class': 'form-select',
-            }),
-            'tags': forms.SelectMultiple(attrs={
                 'class': 'form-select',
             }),
             'status': forms.Select(attrs={
@@ -52,21 +49,6 @@ class CategoryForm(forms.ModelForm):
                 'class': 'form-control',
                 'rows': 3,
                 'placeholder': 'Optional description',
-            }),
-        }
-
-
-# =========================================================
-# TAG FORM
-# =========================================================
-class TagForm(forms.ModelForm):
-    class Meta:
-        model = Tag
-        fields = ['name']
-        widgets = {
-            'name': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Enter tag name',
             }),
         }
 

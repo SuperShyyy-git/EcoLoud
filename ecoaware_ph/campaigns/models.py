@@ -9,7 +9,6 @@ class Campaign(models.Model):
     title = models.CharField(max_length=200)
     description = CKEditor5Field('Description', config_name='extends')
     image = models.ImageField(upload_to='campaigns/', blank=True, null=True)
-    goal = models.DecimalField(max_digits=10, decimal_places=2)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     is_active = models.BooleanField(default=True)

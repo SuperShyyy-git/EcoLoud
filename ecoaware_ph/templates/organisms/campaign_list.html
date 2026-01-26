@@ -121,23 +121,6 @@
                             {{ campaign.description|striptags|truncatewords:15 }}
                         </p>
 
-                        <!-- Funding Progress -->
-                        <div class="mb-4">
-                            <div
-                                class="flex justify-between items-center mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">
-                                <span>Progress</span>
-                                <span class="text-emerald-600">₱{{ campaign.goal }}</span>
-                            </div>
-                            <div class="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
-                                <div class="progress-bar-fill bg-gradient-to-r from-emerald-400 to-teal-500 h-full rounded-full"
-                                    style="width: 60%"></div>
-                            </div>
-                            <div class="mt-2 flex justify-between text-xs text-gray-500">
-                                <span>60% Funded</span>
-                                <span>{{ campaign.days_left }} days left</span>
-                            </div>
-                        </div>
-
                         <!-- Info Footer -->
                         <div class="flex items-center justify-between pt-4 border-t border-gray-100">
                             <div class="flex items-center gap-2 text-sm text-gray-500">

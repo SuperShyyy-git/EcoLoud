@@ -28,25 +28,6 @@ class Category(models.Model):
 
 
 # =========================================================
-# TAG MODEL
-# =========================================================
-class Tag(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-    slug = models.SlugField(max_length=50, unique=True, blank=True)
-
-    class Meta:
-        ordering = ['name']
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
-
-
-# =========================================================
 # ARTICLE MODEL
 # =========================================================
 class Article(models.Model):
@@ -63,7 +44,6 @@ class Article(models.Model):
     featured_image = models.ImageField(upload_to='articles/', blank=True, null=True)
 
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='articles')
-    tags = models.ManyToManyField(Tag, blank=True, related_name='articles')
 
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='articles')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='DRAFT')

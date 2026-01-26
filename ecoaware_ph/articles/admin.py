@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Article, Category, Tag
+from .models import Article, Category
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -7,11 +7,6 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     search_fields = ('name',)
 
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
-    list_display = ('name', 'slug')
-    prepopulated_fields = {'slug': ('name',)}
-    search_fields = ('name',)
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
@@ -19,5 +14,5 @@ class ArticleAdmin(admin.ModelAdmin):
     list_filter = ('status', 'category', 'created_at')
     search_fields = ('title', 'content')
     prepopulated_fields = {'slug': ('title',)}
-    filter_horizontal = ('tags',)
+
     date_hierarchy = 'created_at'
