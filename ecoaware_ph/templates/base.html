@@ -342,7 +342,9 @@
             });
         }, 5000);
     </script>
+    {% if user.is_authenticated %}
     {% include 'includes/chat_widget.html' %}
+    {% endif %}
 </body>
 
 </html>
