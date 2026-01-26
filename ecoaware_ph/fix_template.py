@@ -1,4 +1,7 @@
-{% extends 'base.html' %}
+
+import os
+
+content = """{% extends 'base.html' %}
 
 {% block title %}Participants - {{ campaign.title }}{% endblock %}
 
@@ -61,3 +64,10 @@
     </div>
 </div>
 {% endblock %}
+"""
+
+file_path = os.path.join(r"c:\Users\Janna\ecoaware_ph\ecoaware_ph\templates\organisms", "campaign_participants.html")
+with open(file_path, "w", encoding='utf-8') as f:
+    f.write(content)
+
+print(f"Successfully wrote to {file_path}")
