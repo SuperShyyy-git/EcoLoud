@@ -13,4 +13,7 @@ urlpatterns = [
     # Suggestion
     path('suggest/', views.campaign_suggest, name='campaign_suggest'),
     path('suggestion/<int:suggestion_id>/convert/', views.campaign_convert, name='campaign_convert'),
+    
+    # Join
+    path('<int:pk>/join/', views.join_campaign, name='join_campaign'),
 ]

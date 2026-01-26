@@ -41,7 +41,7 @@
                 </h1>
                 <div class="flex items-center gap-6 text-white text-sm">
                     <span>📅 {{ campaign.start_date|date:"M d" }} - {{ campaign.end_date|date:"M d, Y" }}</span>
-                    <span>👥 125 participants</span>
+                    <span>👥 {{ campaign.participants.count }} participants</span>
                 </div>
             </div>
         </div>
@@ -178,7 +178,7 @@
                     </div>
 
                     <div class="stat-card bg-teal-50 rounded-xl p-4">
-                        <div class="text-2xl font-bold text-teal-700">125</div>
+                        <div class="text-2xl font-bold text-teal-700">{{ campaign.participants.count }}</div>
                         <div class="text-sm text-gray-600">Participants</div>
                     </div>
 
@@ -189,10 +189,27 @@
                 </div>
 
                 <!-- Join Button -->
-                <button
-                    class="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg hover:shadow-xl mb-4">
-                    🎯 Join Campaign
-                </button>
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'campaigns:join_campaign' campaign.pk %}">
+                    {% csrf_token %}
+                    {% if user in campaign.participants.all %}
+                    <button type="submit"
+                        class="w-full py-4 bg-red-600 text-white font-bold text-lg rounded-xl hover:bg-red-700 transition-all shadow-lg hover:shadow-xl mb-4">
+                        ❌ Leave Campaign
+                    </button>
+                    {% else %}
+                    <button type="submit"
+                        class="w-full py-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold text-lg rounded-xl hover:from-emerald-700 hover:to-teal-700 transition-all shadow-lg hover:shadow-xl mb-4">
+                        🎯 Join Campaign
+                    </button>
+                    {% endif %}
+                </form>
+                {% else %}
+                <a href="{% url 'users:login' %}?next={{ request.path }}"
+                    class="block text-center w-full py-4 bg-gray-600 text-white font-bold text-lg rounded-xl hover:bg-gray-700 transition-all shadow-lg hover:shadow-xl mb-4">
+                    🔒 Login to Join
+                </a>
+                {% endif %}
 
                 <!-- Share -->
                 <div class="text-center">
@@ -215,7 +232,7 @@
             </div>
 
             <!-- Organizer Info -->
-            <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
                 <h3 class="font-bold text-gray-800 mb-4">Campaign Organizer</h3>
                 <div class="flex items-center gap-3 mb-4">
                     <div
@@ -230,6 +247,37 @@
                 <p class="text-sm text-gray-600">
                     Dedicated to promoting environmental awareness and sustainable practices across the Philippines.
                 </p>
+            </div>
+
+            <!-- Participants List -->
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <h3 class="font-bold text-gray-800 mb-4">Recent Participants</h3>
+                {% if campaign.participants.exists %}
+                <div class="flex -space-x-3 overflow-hidden mb-3">
+                    {% for participant in campaign.participants.all|slice:":5" %}
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border-2 border-white flex items-center justify-center text-white text-xs font-bold"
+                        title="{{ participant.username }}">
+                        {{ participant.username.0|upper }}
+                    </div>
+                    {% endfor %}
+                    {% if campaign.participants.count > 5 %}
+                    <div
+                        class="w-10 h-10 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-gray-600 text-xs font-bold">
+                        +{{ campaign.participants.count|add:"-5" }}
+                    </div>
+                    {% endif %}
+                </div>
+                <p class="text-sm text-gray-500">
+                    {% with count=campaign.participants.count %}
+                    {{ count }} person{{ count|pluralize }} joined this campaign
+                    {% endwith %}
+                </p>
+                {% else %}
+                <div class="text-center py-4">
+                    <span class="text-4xl mb-2 block">👋</span>
+                    <p class="text-gray-500 text-sm">Be the first to join!</p>
+                </div>
+                {% endif %}
             </div>
 
         </div>

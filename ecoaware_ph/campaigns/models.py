@@ -12,6 +12,7 @@ class Campaign(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     is_active = models.BooleanField(default=True)
+    participants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='joined_campaigns', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from .models import Campaign
 from .forms import CampaignForm
 
@@ -113,3 +114,16 @@ def campaign_convert(request, suggestion_id):
         'form': form, 
         'title': f'Convert Suggestion: {suggestion.title}'
     })
+
+@login_required
+def join_campaign(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    if request.method == 'POST':
+        if request.user in campaign.participants.all():
+            campaign.participants.remove(request.user)
+            messages.success(request, f'You have left the campaign "{campaign.title}".')
+        else:
+            campaign.participants.add(request.user)
+            messages.success(request, f'You have successfully joined the campaign "{campaign.title}"!')
+            
+    return redirect('campaigns:campaign_detail', pk=pk)
