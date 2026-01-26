@@ -173,16 +173,12 @@
                             {{ field.label }}
                             {% endif %}
                         </label>
-
-                        type="{% if 'password' in field.name %}password{% elif field.name == 'email' %}email{% else
-                        %}text{% endif %}"
-                        name="{{ field.name }}" id="{{ field.id_for_label }}"
-                        placeholder="{% if field.name == 'username' %}Choose a username{% elif field.name == 'email'
-                        %}your@email.com{% elif field.name == 'password1' %}Create a strong password{% elif field.name
-                        == 'password2' %}Re-enter your password{% endif %}"
-                        class="glass-input w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none
-                        focus:border-emerald-500 text-gray-700 {% if 'password' in field.name %}pr-12{% endif %}"
-                        {% if field.value %}value="{{ field.value }}" {% endif %}>
+                        <input {% if 'password' in field.name %}type="password" {% elif field.name=='email'
+                            %}type="email" {% else %}type="text" {% endif %} name="{{ field.name }}"
+                            id="{{ field.id_for_label }}"
+                            placeholder="{% if field.name == 'username' %}Choose a username{% elif field.name == 'email' %}your@email.com{% elif field.name == 'password1' %}Create a strong password{% elif field.name == 'password2' %}Re-enter your password{% endif %}"
+                            class="glass-input w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-emerald-500 text-gray-700 {% if 'password' in field.name %}pr-12{% endif %}"
+                            {% if field.value %}value="{{ field.value }}" {% endif %}>
 
                         {% if 'password' in field.name %}
                         <button type="button" onclick="togglePassword('{{ field.id_for_label }}')"
