@@ -30,6 +30,18 @@ class CustomUserCreationForm(UserCreationForm):
         model = CustomUser
         fields = UserCreationForm.Meta.fields + ('email',)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Remove help text
+        self.fields['username'].help_text = None
+        if 'password' in self.fields:
+             self.fields['password'].help_text = None # Just in case
+        
+        # Also styling
+        for field in self.fields:
+            self.fields[field].widget.attrs['class'] = TAILWIND_INPUT_CLASS
+
+
 
 
 class CustomUserChangeForm(UserChangeForm):
