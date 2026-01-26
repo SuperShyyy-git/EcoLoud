@@ -6,3 +6,5 @@ whitenoise
 django-ckeditor-5
 django-extensions
 Pillow
+django-cloudinary-storage
+cloudinary
