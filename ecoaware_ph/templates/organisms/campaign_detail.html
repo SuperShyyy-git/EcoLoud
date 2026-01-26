@@ -41,7 +41,7 @@
                 </h1>
                 <div class="flex items-center gap-6 text-white text-sm">
                     <span>📅 {{ campaign.start_date|date:"M d" }} - {{ campaign.end_date|date:"M d, Y" }}</span>
-                    <span>👥 {{ campaign.participants.count|add:123 }} participants</span>
+                    <span>👥 {{ campaign.participants.count }} participants</span>
                 </div>
             </div>
         </div>
@@ -181,7 +181,7 @@
                         class="stat-card bg-teal-50 rounded-xl p-4 block hover:bg-teal-100 transition-colors cursor-pointer group">
                         <div
                             class="text-2xl font-bold text-teal-700 group-hover:scale-110 transition-transform origin-left">
-                            +{{ campaign.participants.count|add:123 }}</div>
+                            {{ campaign.participants.count }}</div>
                         <div class="text-sm text-gray-600 group-hover:text-teal-800">Participants →</div>
                     </a>
 
@@ -269,14 +269,15 @@
                         {% endfor %}
 
 
-                        <!-- Always show bubble for hidden participants including fakes -->
+                        {% if campaign.participants.count > 5 %}
                         <div
                             class="w-10 h-10 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-gray-600 text-xs font-bold">
-                            +{{ campaign.participants.count|add:118 }}
+                            +{{ campaign.participants.count|add:"-5" }}
                         </div>
+                        {% endif %}
                     </div>
                     <p class="text-sm text-gray-500 group-hover:text-emerald-600 transition-colors">
-                        {% with count=campaign.participants.count|add:123 %}
+                        {% with count=campaign.participants.count %}
                         {{ count }} person{{ count|pluralize }} joined this campaign
                         {% endwith %}
                         <span class="text-xs ml-1">→</span>
