@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.urls import reverse
 from django_ckeditor_5.fields import CKEditor5Field
 
@@ -15,6 +16,10 @@ class Campaign(models.Model):
     participants = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='joined_campaigns', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    @property
+    def is_ended(self):
+        return timezone.now() > self.end_date
 
     def __str__(self):
         return self.title

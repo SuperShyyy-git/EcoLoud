@@ -7,10 +7,18 @@ from .forms import CampaignForm
 # List all campaigns
 @login_required
 def campaign_list(request):
-    campaigns = Campaign.objects.all()
+    from django.utils import timezone
+    now = timezone.now()
+    
+    # Split campaigns into active and archived
+    active_campaigns = Campaign.objects.filter(end_date__gte=now).order_by('end_date')
+    archived_campaigns = Campaign.objects.filter(end_date__lt=now).order_by('-end_date')
+    
     is_admin = request.user.is_staff  # True if the user is admin
     return render(request, 'organisms/campaign_list.html', {
-        'campaigns': campaigns,
+        'active_campaigns': active_campaigns,
+        'archived_campaigns': archived_campaigns,
+        'has_archived': archived_campaigns.exists(),
         'is_admin': is_admin
     })
 
