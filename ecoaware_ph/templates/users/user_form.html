@@ -1,29 +1,100 @@
 {% extends "base.html" %}
 
-{% block title %}Edit User{% endblock %}
+{% block title %}Edit User - EcoAware PH{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2>Edit User</h2>
-    <form method="POST">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
-        <div class="mb-3">
-            {% for field in form %}
-                <div class="form-group mb-2">
-                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}
-                        <small class="form-text text-muted">{{ field.help_text }}</small>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <div class="text-danger">{{ error }}</div>
-                    {% endfor %}
+<div class="min-h-screen py-12 flex items-center justify-center bg-gray-50 relative">
+
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-2xl mx-auto">
+
+            <!-- Glass Card -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+
+                <!-- Header -->
+                <div class="px-8 py-6 border-b border-gray-200 bg-gray-50/50">
+                    <h1 class="text-2xl font-bold font-display text-gray-800">
+                        👤 Edit User Details
+                    </h1>
+                    <p class="text-gray-500 mt-1">Manage user permissions and information.</p>
                 </div>
-            {% endfor %}
+
+                <!-- Form -->
+                <div class="p-8">
+                    <form method="POST" class="space-y-5">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                        <div class="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg">
+                            {{ form.non_field_errors }}
+                        </div>
+                        {% endif %}
+
+                        {% for field in form %}
+                        <div class="space-y-1">
+                            <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700">
+                                {{ field.label }}
+                            </label>
+
+                            <div class="relative">
+                                {% if field.field.widget.input_type == 'checkbox' %}
+                                <div
+                                    class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg bg-gray-50/50 hover:bg-white transition-colors">
+                                    {{ field }}
+                                    <span class="text-sm text-gray-600">Enable this option</span>
+                                </div>
+                                {% else %}
+                                {{ field }}
+                                {% endif %}
+                            </div>
+
+                            {% if field.help_text %}
+                            <p class="text-xs text-gray-500 mt-1">{{ field.help_text }}</p>
+                            {% endif %}
+
+                            {% if field.errors %}
+                            <p class="text-red-500 text-sm flex items-center gap-1 mt-1">
+                                ⚠️ {{ field.errors.0 }}
+                            </p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+
+                        <!-- Actions -->
+                        <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-100 mt-8">
+                            <a href="{% url 'users:user_list' %}"
+                                class="px-6 py-2.5 rounded-lg font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                                Cancel
+                            </a>
+                            <button type="submit"
+                                class="px-8 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-all shadow-md">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a href="{% url 'users:user_list' %}" class="btn btn-secondary">Cancel</a>
-    </form>
+    </div>
 </div>
+
+<style>
+    /* Admin Form specific inputs */
+    input[type="text"],
+    input[type="email"] {
+        width: 100%;
+        padding: 0.6rem 1rem;
+        background-color: white;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        transition: all 0.2s ease;
+    }
+
+    input:focus {
+        border-color: #10b981;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+</style>
 {% endblock %}

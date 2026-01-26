@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
 from .models import Campaign
 from .forms import CampaignForm
 
 # List all campaigns
+@login_required
 def campaign_list(request):
     campaigns = Campaign.objects.all()
     is_admin = request.user.is_staff  # True if the user is admin
@@ -12,6 +14,7 @@ def campaign_list(request):
     })
 
 # Campaign detail
+@login_required
 def campaign_detail(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
     is_admin = request.user.is_staff
@@ -21,6 +24,7 @@ def campaign_detail(request, pk):
     })
 
 # Create a new campaign
+@login_required
 def campaign_create(request):
     if request.method == 'POST':
         form = CampaignForm(request.POST, request.FILES)
@@ -32,6 +36,7 @@ def campaign_create(request):
     return render(request, 'organisms/campaign_form.html', {'form': form})
 
 # Update an existing campaign
+@login_required
 def campaign_update(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
     if request.method == 'POST':
@@ -44,9 +49,67 @@ def campaign_update(request, pk):
     return render(request, 'organisms/campaign_form.html', {'form': form})
 
 # Delete a campaign
+@login_required
 def campaign_delete(request, pk):
     campaign = get_object_or_404(Campaign, pk=pk)
     if request.method == 'POST':
         campaign.delete()
         return redirect('campaigns:campaign_list')
     return render(request, 'organisms/campaign_confirm_delete.html', {'campaign': campaign})
+    return render(request, 'organisms/campaign_confirm_delete.html', {'campaign': campaign})
+
+
+# Suggest a campaign
+@login_required
+def campaign_suggest(request):
+    from .forms import CampaignSuggestionForm
+    from django.contrib import messages
+    
+    if request.method == 'POST':
+        form = CampaignSuggestionForm(request.POST)
+        if form.is_valid():
+            suggestion = form.save(commit=False)
+            suggestion.user = request.user
+            suggestion.save()
+            messages.success(request, 'Thank you! Your campaign suggestion has been submitted for review.')
+            return redirect('campaigns:campaign_list')
+    else:
+        form = CampaignSuggestionForm()
+    
+    return render(request, 'organisms/campaign_suggestion.html', {'form': form})
+
+
+@login_required
+def campaign_convert(request, suggestion_id):
+    if not request.user.is_staff:
+        return redirect('home')
+        
+    from .models import CampaignSuggestion
+    from .forms import CampaignForm
+    from django.contrib import messages
+    
+    suggestion = get_object_or_404(CampaignSuggestion, pk=suggestion_id)
+    
+    if request.method == 'POST':
+        form = CampaignForm(request.POST, request.FILES)
+        if form.is_valid():
+            campaign = form.save()
+            
+            # Update suggestion status
+            suggestion.status = 'APPROVED'
+            suggestion.save()
+            
+            messages.success(request, f'Campaign "{campaign.title}" created from suggestion!')
+            return redirect('users:admin_dashboard')
+    else:
+        # Pre-fill form with suggestion data
+        initial_data = {
+            'title': suggestion.title,
+            'description': suggestion.description,
+        }
+        form = CampaignForm(initial=initial_data)
+    
+    return render(request, 'organisms/campaign_form.html', {
+        'form': form, 
+        'title': f'Convert Suggestion: {suggestion.title}'
+    })

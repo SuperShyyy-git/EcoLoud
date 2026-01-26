@@ -1,11 +1,15 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
+{# 
+    We intentionally leave 'content' empty in the base layout 
+    and use it to wrap the centered content. 
+#}
 {% block content %}
-<div class="flex items-center justify-center pt-12 pb-12">
+<div class="flex items-center justify-center py-12 px-4 md:px-6 min-h-screen">
     <div class="w-full max-w-md">
-        {# The block your login.html template will fill #}
-        {% block card_content %} 
-        {% endblock card_content %}
+        {% block card_content %}
+            {# Content from register.html or login.html will be injected here #}
+        {% endblock %}
     </div>
 </div>
-{% endblock content %}
+{% endblock %}

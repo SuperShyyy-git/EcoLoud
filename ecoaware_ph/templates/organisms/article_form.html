@@ -1,39 +1,140 @@
 {% extends 'base.html' %}
 
 {% block title %}
-{% if form.instance.pk %}Edit Article{% else %}Create Article{% endif %}
+{% if form.instance.pk %}Edit Article{% else %}Create New Article{% endif %} - EcoAware PH
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-green-800 mb-6">
-        {% if form.instance.pk %}Edit Article{% else %}Create Article{% endif %}
-    </h1>
+<div
+    class="min-h-screen py-12 flex items-center justify-center bg-[url('https://images.unsplash.com/photo-1542601906990-24d4c16419d9?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center bg-fixed relative">
+    <!-- Overlay -->
+    <div class="absolute inset-0 bg-green-900/10 backdrop-blur-[2px]"></div>
 
-    {# 👇 THE CRITICAL FIX IS ADDING enctype="multipart/form-data" HERE 👇 #}
-    <form method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded-lg shadow-md">
-        {% csrf_token %}
-        {% for field in form %}
-            <div class="mb-4">
-                <label for="{{ field.id_for_label }}" class="block text-gray-700 font-semibold mb-2">
-                    {{ field.label }}
-                    {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
-                </label>
-                {{ field }}
-                {% if field.errors %}
-                    <p class="text-red-600 text-sm mt-1">{{ field.errors|striptags }}</p>
-                {% endif %}
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-3xl mx-auto">
+
+            <!-- Glass Card -->
+            <div class="bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-white/40">
+
+                <!-- Header -->
+                <div class="px-8 py-6 border-b border-gray-200/60 bg-white/50">
+                    <h1 class="text-3xl font-bold font-display text-gray-800">
+                        {% if form.instance.pk %}✏️ Edit Article{% else %}📝 Create New Article{% endif %}
+                    </h1>
+                    <p class="text-gray-500 mt-1">Share your knowledge and inspire the community.</p>
+                </div>
+
+                <!-- Form -->
+                <div class="p-8">
+                    <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                        {% csrf_token %}
+
+                        <!-- Non-field Errors -->
+                        {% if form.non_field_errors %}
+                        <div class="p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-lg">
+                            {{ form.non_field_errors }}
+                        </div>
+                        {% endif %}
+
+                        {% for field in form %}
+                        <div class="space-y-2">
+                            <label for="{{ field.id_for_label }}"
+                                class="block text-sm font-semibold text-gray-700 uppercase tracking-wide">
+                                {{ field.label }}
+                                {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+                            </label>
+
+                            <div class="relative">
+                                <!-- Checkbox special handling -->
+                                {% if field.field.widget.input_type == 'checkbox' %}
+                                <div class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl bg-white/50">
+                                    {{ field }}
+                                    <span class="text-gray-600">{{ field.help_text }}</span>
+                                </div>
+                                {% else %}
+                                <div
+                                    class="field-wrapper {% if field.name == 'category' %}flex gap-2 items-center{% endif %}">
+                                    {{ field }}
+                                    {% if field.name == 'category' %}
+                                    <a href="{% url 'articles:category_create' %}" target="_blank"
+                                        class="p-3 bg-emerald-100 text-emerald-700 rounded-xl hover:bg-emerald-200 transition-colors flex-shrink-0"
+                                        title="Create New Category">
+                                        ➕
+                                    </a>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+
+                            {% if field.errors %}
+                            <p class="text-red-500 text-sm flex items-center gap-1">
+                                ⚠️ {{ field.errors.0 }}
+                            </p>
+                            {% endif %}
+
+                            {% if field.help_text and field.field.widget.input_type != 'checkbox' %}
+                            <p class="text-xs text-gray-500">{{ field.help_text }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+
+                        <!-- Actions -->
+                        <div class="flex items-center justify-end gap-4 pt-6 border-t border-gray-200/60 mt-8">
+                            <a href="{% url 'articles:article_list' %}"
+                                class="px-6 py-3 rounded-xl font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                                Cancel
+                            </a>
+                            <button type="submit"
+                                class="btn-glow px-8 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-bold rounded-xl shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
+                                {% if form.instance.pk %}Update Article{% else %}Publish Article{% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        {% endfor %}
 
-        <div class="flex space-x-4 mt-6">
-            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded">
-                {% if form.instance.pk %}Update Article{% else %}Create Article{% endif %}
-            </button>
-            <a href="{% url 'articles:article_list' %}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-2 rounded">
-                Cancel
-            </a>
         </div>
-    </form>
+    </div>
 </div>
+
+<style>
+    /* Form Field Styles */
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    input[type="file"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        background-color: rgba(255, 255, 255, 0.5);
+        border: 1px solid #e2e8f0;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        background-color: #fff;
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    /* CKEditor Customization overrides */
+    .django-ckeditor-widget {
+        width: 100% !important;
+    }
+
+    .ck-editor__editable {
+        min-height: 300px !important;
+        border-radius: 0 0 0.75rem 0.75rem !important;
+    }
+
+    .ck-toolbar {
+        border-radius: 0.75rem 0.75rem 0 0 !important;
+    }
+</style>
 {% endblock %}

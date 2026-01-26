@@ -1,0 +1,20 @@
+databases:
+  - name: ecoaware_ph_db
+    databaseName: ecoaware_ph
+    user: ecoaware_user
+
+services:
+  - type: web
+    name: ecoaware_ph
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn ecoaware_ph.wsgi:application"
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ecoaware_ph_db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4

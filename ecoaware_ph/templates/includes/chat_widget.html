@@ -1,0 +1,261 @@
+<!-- Chat Widget -->
+<div id="eco-chat-widget" class="fixed bottom-6 right-6 z-50 flex flex-col items-end font-sans">
+
+    <!-- Chat Screen (Hidden by default) -->
+    <div id="chat-window"
+        class="hidden flex-col w-[22rem] sm:w-96 h-[32rem] bg-white/95 backdrop-blur-xl border border-emerald-100 rounded-2xl shadow-2xl mb-4 overflow-hidden transition-all transform origin-bottom-right scale-95 opacity-0">
+
+        <!-- Header -->
+        <div
+            class="bg-gradient-to-r from-emerald-600 to-teal-500 p-4 flex justify-between items-center text-white shadow-md z-10">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm">
+                    <span class="text-lg">🌱</span>
+                </div>
+                <div>
+                    <h3 class="font-bold font-display text-lg">EcoBot</h3>
+                    <p class="text-xs text-emerald-50 opacity-90 flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 bg-green-300 rounded-full animate-pulse"></span> Online
+                    </p>
+                </div>
+            </div>
+            <button id="close-chat"
+                class="p-1 hover:bg-white/10 rounded-full transition-colors text-white/90 hover:text-white">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Messages Area -->
+        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50/50 scroll-smooth">
+            <!-- Welcome Message -->
+            <div class="flex justify-start gap-2">
+                <div
+                    class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200 flex items-center justify-center flex-shrink-0 text-sm">
+                    🤖
+                </div>
+                <div
+                    class="bg-white border border-gray-100 text-gray-700 rounded-2xl rounded-tl-none py-3 px-4 text-sm shadow-sm max-w-[85%] leading-relaxed">
+                    <p><strong>Hi there!</strong> I'm your Eco-Assistant.</p>
+                    <p class="mt-1">I can help you with recycling tips, finding campaigns, or answering environmental
+                        questions. Try a suggestion below!</p>
+                </div>
+            </div>
+
+            <!-- Quick Suggestions -->
+            <div id="suggestion-chips" class="flex flex-wrap gap-2 ml-10">
+                <button type="button"
+                    class="suggestion-btn bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-medium px-3 py-1.5 rounded-full border border-emerald-200 transition-colors">♻️
+                    Recycling Guide</button>
+                <button type="button"
+                    class="suggestion-btn bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1.5 rounded-full border border-blue-200 transition-colors">📅
+                    Upcoming Events</button>
+                <button type="button"
+                    class="suggestion-btn bg-purple-50 hover:bg-purple-100 text-purple-700 text-xs font-medium px-3 py-1.5 rounded-full border border-purple-200 transition-colors">✋
+                    How to Volunteer</button>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-3 bg-white border-t border-gray-100">
+            <form id="chat-form" class="flex gap-2 items-center">
+                <input type="text" id="chat-input" placeholder="Type a message..."
+                    class="flex-1 bg-gray-100 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all outline-none placeholder-gray-400">
+                <button type="submit" id="chat-submit-btn"
+                    class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl p-3 transition-all shadow-md hover:shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed group">
+                    <svg class="w-5 h-5 transform group-hover:translate-x-0.5 transition-transform" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toggle Button -->
+    <button id="chat-toggle"
+        class="group flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full shadow-2xl shadow-emerald-500/40 border-4 border-white ring-4 ring-emerald-100 hover:scale-110 active:scale-95 transition-all duration-300 z-[100]">
+        <span class="text-4xl group-hover:hidden transition-all filter drop-shadow-md">💬</span>
+        <svg class="w-8 h-8 text-white hidden group-hover:block transition-all" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+    </button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Elements
+        const chatToggle = document.getElementById('chat-toggle');
+        const closeChat = document.getElementById('close-chat');
+        const chatWindow = document.getElementById('chat-window');
+        const chatForm = document.getElementById('chat-form');
+        const chatInput = document.getElementById('chat-input');
+        const chatSubmitBtn = document.getElementById('chat-submit-btn');
+        const messagesContainer = document.getElementById('chat-messages');
+        const suggestionBtns = document.querySelectorAll('.suggestion-btn');
+
+        // --- State Management ---
+        function setLoading(isLoading) {
+            if (isLoading) {
+                chatInput.disabled = true;
+                chatSubmitBtn.disabled = true;
+                chatInput.classList.add('opacity-50');
+            } else {
+                chatInput.disabled = false;
+                chatSubmitBtn.disabled = false;
+                chatInput.classList.remove('opacity-50');
+                chatInput.focus();
+            }
+        }
+
+        // --- Suggestion Chips Logic ---
+        suggestionBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const text = btn.innerText; // Get text from button
+                chatInput.value = text;
+                chatForm.requestSubmit(); // Trigger submit
+            });
+        });
+
+        // --- Toggle Window ---
+        function toggleChat() {
+            chatWindow.classList.toggle('hidden');
+            if (!chatWindow.classList.contains('hidden')) {
+                setTimeout(() => {
+                    chatWindow.classList.remove('scale-95', 'opacity-0');
+                    chatWindow.classList.add('scale-100', 'opacity-100');
+                    chatInput.focus();
+                }, 10);
+            } else {
+                chatWindow.classList.add('scale-95', 'opacity-0');
+                chatWindow.classList.remove('scale-100', 'opacity-100');
+            }
+        }
+
+        chatToggle.addEventListener('click', toggleChat);
+        closeChat.addEventListener('click', toggleChat);
+
+        // --- Main Send Logic ---
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const message = chatInput.value.trim();
+            if (!message) return;
+
+            // Hide suggestions on first interaction
+            const suggestions = document.getElementById('suggestion-chips');
+            if (suggestions) suggestions.style.display = 'none';
+
+            // Add User Message
+            appendMessage(message, 'user');
+            chatInput.value = '';
+
+            // Disable Input while waiting
+            setLoading(true);
+            const typingId = showTyping();
+
+            try {
+                const response = await fetch('/api/chat/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: message })
+                });
+
+                const data = await response.json();
+
+                removeTyping(typingId);
+
+                if (data.reply) {
+                    appendMessage(data.reply, 'bot');
+                } else {
+                    appendMessage("Sorry, I'm having trouble connecting right now.", 'bot');
+                }
+
+            } catch (error) {
+                removeTyping(typingId);
+                console.error('Chat error:', error);
+                appendMessage("Error: Could not reach the server.", 'bot');
+            } finally {
+                // Re-enable Input
+                setLoading(false);
+            }
+        });
+
+        // --- UI Helpers ---
+        function appendMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `flex gap-2 ${sender === 'user' ? 'justify-end' : 'justify-start'} animate-fade-in-up`;
+
+            let htmlContent = '';
+            const bubbleClass = sender === 'user'
+                ? 'bg-emerald-600 text-white rounded-2xl rounded-tr-none py-3 px-4 text-sm shadow-md max-w-[85%] leading-relaxed whitespace-pre-wrap'
+                : 'bg-white border border-gray-100 text-gray-700 rounded-2xl rounded-tl-none py-3 px-4 text-sm shadow-sm max-w-[85%] leading-relaxed whitespace-pre-wrap';
+
+            if (sender === 'bot') {
+                const botIcon = `<div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200 flex items-center justify-center flex-shrink-0 text-sm">🤖</div>`;
+                const messageDiv = document.createElement('div');
+                messageDiv.className = bubbleClass;
+                messageDiv.textContent = text; // Safe text
+
+                div.innerHTML = botIcon;
+                div.appendChild(messageDiv);
+            } else {
+                const userIcon = `<div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 text-sm text-gray-500">👤</div>`;
+                const messageDiv = document.createElement('div');
+                messageDiv.className = bubbleClass;
+                messageDiv.textContent = text; // Safe text
+
+                div.appendChild(messageDiv);
+                div.innerHTML += userIcon;
+            }
+
+            messagesContainer.appendChild(div);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function showTyping() {
+            const id = 'typing-' + Date.now();
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = 'flex justify-start gap-2';
+            div.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-100 to-teal-100 border border-emerald-200 flex items-center justify-center flex-shrink-0 text-sm">🤖</div>
+            <div class="bg-white border border-gray-100 rounded-2xl rounded-tl-none py-3 px-4 shadow-sm flex gap-1 items-center h-10">
+                <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></div>
+                <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                <div class="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+            </div>
+        `;
+            messagesContainer.appendChild(div);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            return id;
+        }
+
+        function removeTyping(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+    });
+</script>
+
+<style>
+    /* Simple Fade Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.3s ease-out forwards;
+    }
+</style>

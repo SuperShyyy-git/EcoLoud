@@ -95,3 +95,21 @@ class Article(models.Model):
 
     def get_absolute_url(self):
         return reverse('articles:article_detail', kwargs={'slug': self.slug})
+
+
+# =========================================================
+# COMMENT MODEL
+# =========================================================
+class Comment(models.Model):
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f'Comment by {self.author} on {self.article}'

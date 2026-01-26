@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ action }} Category - EcoAware PH{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4">
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <h1 class="text-3xl font-bold text-gray-800 mb-6">{{ action }} Category</h1>
+
+                <form method="post" class="space-y-6">
+                    {% csrf_token %}
+
+                    {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">
+                            {{ field.label }}
+                        </label>
+
+                        {% if field.name == 'name' %}
+                        <input type="text" name="{{ field.name }}" id="{{ field.id_for_label }}"
+                            value="{{ field.value|default:'' }}" placeholder="e.g., Climate Change, Recycling, Wildlife"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">
+                        {% elif field.name == 'description' %}
+                        <textarea name="{{ field.name }}" id="{{ field.id_for_label }}" rows="4"
+                            placeholder="Optional: Brief description of this category"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200">{{ field.value|default:'' }}</textarea>
+                        {% endif %}
+
+                        {% if field.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ field.errors|striptags }}</p>
+                        {% endif %}
+
+                        {% if field.help_text %}
+                        <p class="mt-1 text-sm text-gray-500">{{ field.help_text|striptags }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="flex gap-4 pt-4">
+                        <button type="submit"
+                            class="flex-1 px-6 py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors">
+                            {{ action }} Category
+                        </button>
+                        <a href="{% url 'articles:category_list' %}"
+                            class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-colors text-center">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

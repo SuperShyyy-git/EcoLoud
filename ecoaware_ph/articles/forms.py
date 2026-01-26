@@ -1,5 +1,5 @@
 from django import forms
-from .models import Article, Category, Tag
+from .models import Article, Category, Tag, Comment
 
 
 # =========================================================
@@ -69,3 +69,20 @@ class TagForm(forms.ModelForm):
                 'placeholder': 'Enter tag name',
             }),
         }
+
+
+# =========================================================
+# COMMENT FORM
+# =========================================================
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Join the discussion...',
+            }),
+        }
+

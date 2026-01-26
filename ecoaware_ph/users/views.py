@@ -50,14 +50,49 @@ def user_logout(request):
 
 @login_required
 def user_dashboard(request):
-    return render(request, 'users/dashboard.html')
+    try:
+        from articles.models import Article
+        from campaigns.models import Campaign
+        
+        # Get user's articles
+        user_articles = Article.objects.filter(author=request.user).order_by('-created_at')[:5]
+        total_articles = Article.objects.filter(author=request.user).count()
+        
+        context = {
+            'user_articles': user_articles,
+            'total_articles': total_articles,
+            'total_views': sum(article.views for article in Article.objects.filter(author=request.user)),
+            'impact_points': sum(article.views for article in Article.objects.filter(author=request.user)) + total_articles,
+        }
+    except:
+        context = {}
+    
+    return render(request, 'users/dashboard.html', context)
 
 
 @login_required
 def admin_dashboard(request):
     if not request.user.is_staff:
         return redirect('users:access_denied')
-    return render(request, 'users/admin_dashboard.html')
+    
+    try:
+        from articles.models import Article
+        from campaigns.models import Campaign, CampaignSuggestion
+        
+        context = {
+            'total_users': User.objects.count(),
+            'total_articles': Article.objects.count(),
+            'total_campaigns': Campaign.objects.count(),
+            'admin_users': User.objects.filter(is_staff=True).count(),
+            'recent_articles': Article.objects.order_by('-created_at')[:5],
+            'recent_campaigns': Campaign.objects.order_by('-created_at')[:5],
+            'recent_users': User.objects.order_by('-date_joined')[:5],
+            'suggestions': CampaignSuggestion.objects.order_by('-created_at')[:10],
+        }
+    except:
+        context = {}
+        
+    return render(request, 'users/admin_dashboard.html', context)
 
 
 # ------------------------
@@ -118,7 +153,41 @@ def delete_user(request, user_id):
 @login_required
 def user_profile(request, username):
     profile_user = get_object_or_404(User, username=username)
-    return render(request, 'users/profile.html', {'profile_user': profile_user})
+    
+    # Calculate stats
+    try:
+        from articles.models import Article
+        user_articles_qs = Article.objects.filter(author=profile_user)
+        total_articles = user_articles_qs.count()
+        # Sum views, defaulting to 0 if no articles
+        total_views = sum(a.views for a in user_articles_qs)
+        impact_points = total_views + total_articles
+    except Exception:
+        total_articles = 0
+        impact_points = 0
+        
+    context = {
+        'profile_user': profile_user,
+        'total_articles': total_articles,
+        'impact_points': impact_points,
+    }
+    return render(request, 'users/profile.html', context)
+
+
+@login_required
+def edit_profile(request):
+    from .forms import UserUpdateForm
+    
+    if request.method == 'POST':
+        form = UserUpdateForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated!')
+            return redirect('users:user_profile', username=request.user.username)
+    else:
+        form = UserUpdateForm(instance=request.user)
+    
+    return render(request, 'users/edit_profile.html', {'form': form})
 
 
 # ------------------------

@@ -3,161 +3,307 @@
 {% block title %}Admin Dashboard - EcoAware PH{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="mb-8">
-        <h1 class="text-4xl font-bold text-green-800">Admin Dashboard</h1>
-        <p class="text-gray-600 mt-2">Welcome, {{ user.username }}! Manage your content and users.</p>
-    </div>
+<style>
+    .stat-card {
+        transition: all 0.3s ease;
+    }
 
-    <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-blue-100 rounded-lg p-6 shadow-md">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-blue-600 text-sm font-semibold">Total Users</p>
-                    <p class="text-3xl font-bold text-blue-800">{{ total_users }}</p>
-                </div>
-                <div class="text-blue-600 text-4xl">👥</div>
-            </div>
-        </div>
+    .stat-card:hover {
+        transform: translateY(-4px) scale(1.02);
+    }
+</style>
 
-        <div class="bg-green-100 rounded-lg p-6 shadow-md">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-green-600 text-sm font-semibold">Total Articles</p>
-                    <p class="text-3xl font-bold text-green-800">{{ total_articles }}</p>
-                </div>
-                <div class="text-green-600 text-4xl">📰</div>
-            </div>
-        </div>
-
-        <div class="bg-purple-100 rounded-lg p-6 shadow-md">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-purple-600 text-sm font-semibold">Campaigns</p>
-                    <p class="text-3xl font-bold text-purple-800">{{ total_campaigns }}</p>
-                </div>
-                <div class="text-purple-600 text-4xl">🌱</div>
-            </div>
-        </div>
-
-        <div class="bg-red-100 rounded-lg p-6 shadow-md">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-red-600 text-sm font-semibold">Admins</p>
-                    <p class="text-3xl font-bold text-red-800">{{ admin_users }}</p>
-                </div>
-                <div class="text-red-600 text-4xl">👑</div>
+<!-- Admin Header -->
+<section class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center gap-4">
+            <div class="text-5xl">👑</div>
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold">Admin Dashboard</h1>
+                <p class="text-emerald-100 mt-1">Welcome, {{ user.username }}! Manage your platform.</p>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- Quick Actions -->
-    <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-        <h2 class="text-2xl font-bold text-gray-800 mb-4">Quick Actions</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <a href="{% url 'articles:article_create' %}" class="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 text-center">
-                ➕ Create Article
-            </a>
-            <a href="{% url 'campaigns:campaign_create' %}" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 text-center">
-                ➕ Create Campaign
-            </a>
-            <a href="{% url 'users:user_list' %}" class="bg-purple-600 text-white px-6 py-3 rounded hover:bg-purple-700 text-center">
-                👥 Manage Users
-            </a>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Recent Articles -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800">Recent Articles</h2>
-                <a href="{% url 'articles:article_list' %}" class="text-green-600 hover:text-green-700">View All →</a>
-            </div>
-            <div class="space-y-3">
-                {% for article in recent_articles %}
-                <div class="border-l-4 border-green-500 pl-4 py-2">
-                    <h3 class="font-semibold text-gray-800">{{ article.title|truncatewords:8 }}</h3>
-                    <p class="text-sm text-gray-600">{{ article.created_at|date:"M d, Y" }}</p>
-                    <div class="mt-2 space-x-2">
-                        <a href="{% url 'articles:article_detail' article.slug %}" class="text-blue-600 text-sm hover:underline">View</a>
-                        <a href="{% url 'articles:article_update' article.slug %}" class="text-green-600 text-sm hover:underline">Edit</a>
-                        <a href="{% url 'articles:article_delete' article.slug %}" class="text-red-600 text-sm hover:underline">Delete</a>
+<!-- Statistics Cards -->
+<section class="py-8 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 -mt-16">
+            <div class="stat-card bg-white rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-2xl">
+                        👥
                     </div>
+                    <span class="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-semibold rounded-full">Users</span>
                 </div>
-                {% empty %}
-                <p class="text-gray-500 text-center py-4">No articles yet.</p>
-                {% endfor %}
+                <p class="text-3xl font-bold text-gray-800">{{ total_users|default:0 }}</p>
+                <p class="text-gray-500 text-sm mt-1">Total users</p>
             </div>
-        </div>
 
-        <!-- Recent Campaigns -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-gray-800">Recent Campaigns</h2>
-                <a href="{% url 'campaigns:campaign_list' %}" class="text-green-600 hover:text-green-700">View All →</a>
-            </div>
-            <div class="space-y-3">
-                {% for campaign in recent_campaigns %}
-                <div class="border-l-4 border-blue-500 pl-4 py-2">
-                    <h3 class="font-semibold text-gray-800">{{ campaign.title|truncatewords:8 }}</h3>
-                    <p class="text-sm text-gray-600">{{ campaign.created_at|date:"M d, Y" }}</p>
-                    <div class="mt-2 space-x-2">
-                        <a href="{% url 'campaigns:campaign_detail' campaign.slug %}" class="text-blue-600 text-sm hover:underline">View</a>
-                        <a href="{% url 'campaigns:campaign_update' campaign.slug %}" class="text-green-600 text-sm hover:underline">Edit</a>
-                        <a href="{% url 'campaigns:campaign_delete' campaign.slug %}" class="text-red-600 text-sm hover:underline">Delete</a>
+            <div class="stat-card bg-white rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-2xl">
+                        📰
                     </div>
+                    <span class="px-3 py-1 bg-green-50 text-green-600 text-xs font-semibold rounded-full">Content</span>
                 </div>
-                {% empty %}
-                <p class="text-gray-500 text-center py-4">No campaigns yet.</p>
-                {% endfor %}
+                <p class="text-3xl font-bold text-gray-800">{{ total_articles|default:0 }}</p>
+                <p class="text-gray-500 text-sm mt-1">Total articles</p>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center text-2xl">
+                        🎯
+                    </div>
+                    <span
+                        class="px-3 py-1 bg-purple-50 text-purple-600 text-xs font-semibold rounded-full">Active</span>
+                </div>
+                <p class="text-3xl font-bold text-gray-800">{{ total_campaigns|default:0 }}</p>
+                <p class="text-gray-500 text-sm mt-1">Campaigns</p>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center text-2xl">
+                        👑
+                    </div>
+                    <span class="px-3 py-1 bg-red-50 text-red-600 text-xs font-semibold rounded-full">Admins</span>
+                </div>
+                <p class="text-3xl font-bold text-gray-800">{{ admin_users|default:0 }}</p>
+                <p class="text-gray-500 text-sm mt-1">Admin users</p>
             </div>
         </div>
     </div>
+</section>
 
-    <!-- Recent Users -->
-    <div class="bg-white rounded-lg shadow-md p-6 mt-8">
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-2xl font-bold text-gray-800">Recent Users</h2>
-            <a href="{% url 'users:user_list' %}" class="text-green-600 hover:text-green-700">View All →</a>
+<!-- Quick Actions -->
+<section class="py-6">
+    <div class="container mx-auto px-4">
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Quick Actions</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <a href="{% url 'articles:article_create' %}"
+                    class="flex items-center gap-3 p-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-md hover:shadow-lg">
+                    <span class="text-2xl">📝</span>
+                    <span class="font-semibold">Create Article</span>
+                </a>
+                <a href="{% url 'campaigns:campaign_create' %}"
+                    class="flex items-center gap-3 p-4 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-xl hover:from-teal-600 hover:to-teal-700 transition-all shadow-md hover:shadow-lg">
+                    <span class="text-2xl">🎯</span>
+                    <span class="font-semibold">Create Campaign</span>
+                </a>
+                <a href="{% url 'users:user_list' %}"
+                    class="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg">
+                    <span class="text-2xl">👥</span>
+                    <span class="font-semibold">Manage Users</span>
+                </a>
+            </div>
         </div>
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Username</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joined</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    {% for user in recent_users %}
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ user.username }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ user.email }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs rounded-full {% if user.role == 'admin' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %}">
-                                {{ user.get_role_display }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ user.date_joined|date:"M d, Y" }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 py-1 text-xs rounded-full {% if user.is_active %}bg-green-100 text-green-800{% else %}bg-gray-100 text-gray-800{% endif %}">
-                                {% if user.is_active %}Active{% else %}Inactive{% endif %}
-                            </span>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">No users yet.</td>
-                    </tr>
+    </div>
+</section>
+
+<!-- Recent Content -->
+<section class="py-6">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+            <!-- Recent Articles -->
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">Recent Articles</h2>
+                    <a href="{% url 'articles:article_list' %}"
+                        class="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
+                        View All →
+                    </a>
+                </div>
+
+                {% if recent_articles %}
+                <div class="space-y-4">
+                    {% for article in recent_articles %}
+                    <div class="border-l-4 border-emerald-500 pl-4 py-2 hover:bg-gray-50 transition-colors">
+                        <h3 class="font-semibold text-gray-800">{{ article.title|truncatewords:8 }}</h3>
+                        <p class="text-sm text-gray-600 mt-1">
+                            By {{ article.author.username }} • {{ article.created_at|date:"M d, Y" }}
+                        </p>
+                        <div class="mt-2 space-x-2">
+                            <a href="{% url 'articles:article_detail' article.slug %}"
+                                class="text-blue-600 text-sm hover:underline">View</a>
+                            <a href="{% url 'articles:article_update' article.slug %}"
+                                class="text-emerald-600 text-sm hover:underline">Edit</a>
+                        </div>
+                    </div>
                     {% endfor %}
-                </tbody>
-            </table>
+                </div>
+                {% else %}
+                <p class="text-gray-500 text-center py-8">No articles yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Recent Campaigns -->
+            <div class="bg-white rounded-2xl shadow-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">Recent Campaigns</h2>
+                    <a href="{% url 'campaigns:campaign_list' %}"
+                        class="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
+                        View All →
+                    </a>
+                </div>
+
+                {% if recent_campaigns %}
+                <div class="space-y-4">
+                    {% for campaign in recent_campaigns %}
+                    <div class="border-l-4 border-teal-500 pl-4 py-2 hover:bg-gray-50 transition-colors">
+                        <h3 class="font-semibold text-gray-800">{{ campaign.title|truncatewords:8 }}</h3>
+                        <p class="text-sm text-gray-600 mt-1">{{ campaign.created_at|date:"M d, Y" }}</p>
+                        <div class="mt-2 space-x-2">
+                            <a href="{% url 'campaigns:campaign_detail' campaign.pk %}"
+                                class="text-blue-600 text-sm hover:underline">View</a>
+                            <a href="{% url 'campaigns:campaign_update' campaign.pk %}"
+                                class="text-emerald-600 text-sm hover:underline">Edit</a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-gray-500 text-center py-8">No campaigns yet.</p>
+                {% endif %}
+            </div>
+
         </div>
     </div>
-</div>
+</section>
+
+<!-- Campaign Suggestions -->
+<section class="py-6">
+    <div class="container mx-auto px-4">
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-6">💡 Campaign Suggestions</h2>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Campaign Title
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Suggested By
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Reason</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for suggestion in suggestions %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4">
+                                <span class="font-medium text-gray-800">{{ suggestion.title }}</span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ suggestion.user.username }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {{ suggestion.created_at|date:"M d, Y" }}
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-3 py-1 text-xs rounded-full font-medium 
+                                    {% if suggestion.status == 'APPROVED' %}bg-green-100 text-green-700
+                                    {% elif suggestion.status == 'REJECTED' %}bg-red-100 text-red-700
+                                    {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+                                    {{ suggestion.get_status_display }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600 max-w-xs truncate">
+                                {{ suggestion.reason }}
+                            </td>
+                            <td class="px-6 py-4 text-sm text-gray-600">
+                                {% if suggestion.status == 'PENDING' %}
+                                <a href="{% url 'campaigns:campaign_convert' suggestion_id=suggestion.pk %}"
+                                    class="text-emerald-600 hover:text-emerald-800 font-medium hover:underline">
+                                    ✅ Approve
+                                </a>
+                                {% else %}
+                                <span class="text-gray-400">-</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">No suggestions yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Recent Users Table -->
+<section class="py-6 pb-12">
+    <div class="container mx-auto px-4">
+        <div class="bg-white rounded-2xl shadow-lg p-6">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800">Recent Users</h2>
+                <a href="{% url 'users:user_list' %}"
+                    class="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
+                    View All →
+                </a>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joined</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for user in recent_users %}
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-semibold">
+                                        {{ user.username|first|upper }}
+                                    </div>
+                                    <span class="font-medium text-gray-800">{{ user.username }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-gray-600">{{ user.email }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span
+                                    class="px-3 py-1 text-xs rounded-full font-medium
+                                    {% if user.is_staff %}bg-red-100 text-red-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                                    {% if user.is_staff %}Admin{% else %}User{% endif %}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                {{ user.date_joined|date:"M d, Y" }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span
+                                    class="px-3 py-1 text-xs rounded-full font-medium
+                                    {% if user.is_active %}bg-green-100 text-green-700{% else %}bg-gray-100 text-gray-700{% endif %}">
+                                    {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="px-6 py-8 text-center text-gray-500">No users yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

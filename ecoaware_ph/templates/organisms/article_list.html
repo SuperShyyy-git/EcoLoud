@@ -1,18 +1,235 @@
-{% extends 'base.html' %}
-
-{% block content %}
-    <div class="space-y-8">
-        {% if articles %}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {% for article in articles %}
-                    {% include 'molecules/article_card.html' with article=article %}
-                {% endfor %}
-            </div>
-        {% else %}
-            <div class="p-6 bg-yellow-100 border border-yellow-300 rounded-lg text-yellow-800">
-                <h2 class="font-bold text-xl mb-2">No Articles Found</h2>
-                <p>It looks like there aren't any articles published yet. Check back later!</p>
-            </div>
-        {% endif %}
-    </div>
+{% extends 'base.html' %} 
+{% block title %}Articles - EcoAware PH{% endblock %} 
+{% block content %} 
+ 
+<style> 
+    .hero-gradient { 
+        background: linear-gradient(135deg, #059669 0%, #0d9488 50%, #14b8a6 100%); 
+        position: relative; 
+        overflow: hidden; 
+    } 
+ 
+    .article-card { 
+        transition: all 0.3s ease; 
+        background: white; 
+    } 
+ 
+    .article-card:hover { 
+        transform: translateY(-8px); 
+        box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15); 
+    } 
+ 
+    .category-badge { 
+        transition: all 0.2s ease; 
+    } 
+ 
+    .category-badge:hover { 
+        transform: scale(1.05); 
+    } 
+</style> 
+ 
+<!-- Hero Section --> 
+<section class='hero-gradient text-white py-16'> 
+    <div class='container mx-auto px-4'> 
+        <div class='max-w-4xl mx-auto text-center'> 
+            <div class='inline-block px-4 py-2 bg-white/20 rounded-full text-sm font-medium mb-4 backdrop-blur-sm'> 
+                 Knowledge Hub 
+            </div> 
+ 
+            <h1 class='text-4xl md:text-5xl font-bold mb-4'> 
+                Environmental Articles 
+            </h1> 
+ 
+            <p class='text-xl text-emerald-100 mb-8'> 
+                Explore our curated collection of environmental awareness articles, 
+                insights, and actionable tips for a sustainable lifestyle. 
+            </p> 
+ 
+            {% if user.is_staff %} 
+            <a href='{% url 'articles:article_create' %}' 
+                class='inline-flex items-center px-6 py-3 bg-white text-emerald-700 font-semibold rounded-xl hover:bg-emerald-50 transition-all shadow-lg'> 
+                 Create New Article 
+            </a> 
+            {% endif %} 
+        </div> 
+    </div> 
+</section> 
+ 
+<!-- Search & Filter Section --> 
+<section class='bg-white border-b border-gray-200 py-6'> 
+    <div class='container mx-auto px-4'> 
+        <div class='flex flex-col md:flex-row gap-4 items-center justify-between'> 
+            <!-- Search Bar --> 
+            <div class='w-full md:w-1/2'> 
+                <div class='relative'> 
+                    <input type='text' id='searchInput' placeholder=' Search articles...' 
+                        class='w-full px-4 py-3 pl-12 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200'> 
+                    <span class='absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400'></span> 
+                </div> 
+            </div> 
+ 
+            <!-- Filter & Sort --> 
+            <div class='flex gap-3 w-full md:w-auto'> 
+                <form method='GET' class='flex gap-3'> 
+                    <select name='category' onchange='this.form.submit()' 
+                        class='px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 bg-white'> 
+                        <option value=''>All Categories</option> 
+                        {% for category in categories %} 
+                        <option value='{{ category.slug }}' {% if current_category == category.slug %}selected{% endif %}> 
+                            {{ category.name }} 
+                        </option> 
+                        {% endfor %} 
+                    </select> 
+                </form> 
+ 
+                <select 
+                    class='px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 bg-white'> 
+                    <option value='recent'>Most Recent</option> 
+                    <option value='popular'>Most Popular</option> 
+                    <option value='oldest'>Oldest First</option> 
+                </select> 
+            </div> 
+        </div> 
+    </div> 
+</section> 
+ 
+<!-- Articles Grid --> 
+<section class='py-12 bg-gray-50'> 
+    <div class='container mx-auto px-4'> 
+        {% if articles %} 
+        <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'> 
+            {% for article in articles %} 
+            <article class='article-card rounded-2xl overflow-hidden shadow-lg'> 
+                <!-- Article Image --> 
+                <a href='{{ article.get_absolute_url }}' class='block'> 
+                    {% if article.featured_image %} 
+                    <img src='{{ article.featured_image.url }}' alt='{{ article.title }}' 
+                        class='w-full h-56 object-cover'> 
+                    {% else %} 
+                    <div 
+                        class='w-full h-56 bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center'> 
+                        <span class='text-6xl'></span> 
+                    </div> 
+                    {% endif %} 
+                </a> 
+ 
+                <!-- Article Content --> 
+                <div class='p-6'> 
+                    <!-- Category Badge --> 
+                    {% if article.category %} 
+                    <span 
+                        class='category-badge inline-block px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full mb-3'> 
+                        {{ article.category.name }} 
+                    </span> 
+                    {% endif %} 
+ 
+                    <!-- Title --> 
+                    <h3 class='text-xl font-bold text-gray-800 mb-2 line-clamp-2'> 
+                        <a href='{{ article.get_absolute_url }}' class='hover:text-emerald-600 transition-colors'> 
+                            {{ article.title }} 
+                        </a> 
+                    </h3> 
+ 
+                    <!-- Excerpt --> 
+                    <p class='text-gray-600 mb-4 line-clamp-3'> 
+                        {{ article.excerpt|default:article.content|striptags|truncatewords:20 }} 
+                    </p> 
+ 
+                    <!-- Meta Info --> 
+                    <div class='flex items-center justify-between text-sm text-gray-500 mb-4'> 
+                        <span class='flex items-center gap-1'> 
+                             {{ article.views }} views 
+                        </span> 
+                        <span>{{ article.created_at|date:'M d, Y' }}</span> 
+                    </div> 
+ 
+                    <!-- Author --> 
+                    <div class='flex items-center gap-3 pt-4 border-t border-gray-200'> 
+                        <div 
+                            class='w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-700 font-semibold'> 
+                            {{ article.author.username|first|upper }} 
+                        </div> 
+                        <div> 
+                            <p class='text-sm font-medium text-gray-700'>{{ article.author.username }}</p> 
+                            <p class='text-xs text-gray-500'>Author</p> 
+                        </div> 
+                    </div> 
+                </div> 
+ 
+                <!-- Action Footer --> 
+                <div class='px-6 pb-6'> 
+                    <a href='{{ article.get_absolute_url }}' 
+                        class='block w-full text-center py-3 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-colors'> 
+                        Read Article  
+                    </a> 
+                </div> 
+            </article> 
+            {% endfor %} 
+        </div> 
+ 
+        <!-- Pagination --> 
+        {% if articles.has_other_pages %} 
+        <div class='mt-12 flex justify-center'> 
+            <div class='flex gap-2'> 
+                {% if articles.has_previous %} 
+                <a href='?page={{ articles.previous_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}' 
+                    class='px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100 shadow-sm border border-gray-100'></a> 
+                {% endif %} 
+ 
+                {% for i in articles.paginator.page_range %} 
+                {% if articles.number == i %} 
+                <span class='px-4 py-2 bg-emerald-600 text-white rounded-lg shadow-sm'>{{ i }}</span> 
+                {% elif i > articles.number|add:'-3' and i < articles.number|add:'3' %} <a 
+                    href='?page={{ i }}{% if current_category %}&category={{ current_category }}{% endif %}' 
+                    class='px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100 shadow-sm border border-gray-100'> 
+                    {{ i }}</a> 
+                    {% endif %} 
+                    {% endfor %} 
+ 
+                    {% if articles.has_next %} 
+                    <a href='?page={{ articles.next_page_number }}{% if current_category %}&category={{ current_category }}{% endif %}' 
+                        class='px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100 shadow-sm border border-gray-100'></a> 
+                    {% endif %} 
+            </div> 
+        </div> 
+        {% endif %} 
+ 
+        {% else %} 
+        <!-- Empty State --> 
+        <div class='max-w-md mx-auto text-center py-16'> 
+            <div class='text-6xl mb-6'></div> 
+            <h2 class='text-2xl font-bold text-gray-800 mb-3'>No Articles Yet</h2> 
+            <p class='text-gray-600 mb-6'> 
+                It looks like there aren't any articles published yet. Check back later for environmental insights and 
+                tips! 
+            </p> 
+            {% if user.is_staff %} 
+            <a href='{% url 'articles:article_create' %}' 
+                class='inline-flex items-center px-6 py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors'> 
+                 Create First Article 
+            </a> 
+            {% endif %} 
+        </div> 
+        {% endif %} 
+    </div> 
+</section> 
+ 
+<script> 
+    // Simple search functionality 
+    document.getElementById('searchInput')?.addEventListener('input', function (e) { 
+        const searchTerm = e.target.value.toLowerCase(); 
+        const articles = document.querySelectorAll('.article-card'); 
+ 
+        articles.forEach(article => { 
+            const title = article.querySelector('h3').textContent.toLowerCase(); 
+            const excerpt = article.querySelector('p').textContent.toLowerCase(); 
+ 
+            if (title.includes(searchTerm) || excerpt.includes(searchTerm)) { 
+                article.style.display = ''; 
+            } else { 
+                article.style.display = 'none'; 
+            } 
+        }); 
+    }); 
+</script> 
 {% endblock %}

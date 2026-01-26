@@ -1,121 +1,348 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}EcoAware PH{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        emerald: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            200: '#a7f3d0',
+                            300: '#6ee7b7',
+                            400: '#34d399',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                            900: '#064e3b',
+                            950: '#022c22',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-glow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn-glow:hover::after {
+            left: 100%;
+        }
+
+        /* Toast Notifications */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast-msg {
+            animation: slideIn 0.5s ease-out forwards;
+        }
+    </style>
 </head>
-<body class="bg-gray-50">
-    <nav class="bg-green-800 text-white shadow-lg">
+
+<body class="bg-gray-50 flex flex-col min-h-screen">
+
+    <!-- START: Conditional Navbar -->
+    {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'register' %}
+    <nav class="glass-nav fixed w-full z-50 top-0">
         <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <a href="{% url 'home' %}" class="text-2xl font-bold">
-                    🌿 EcoAware PH
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <a href="{% url 'home' %}" class="flex items-center gap-2 group">
+                    <span class="text-3xl transform group-hover:rotate-12 transition-transform">🌿</span>
+                    <span
+                        class="text-2xl font-bold font-display bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
+                        EcoAware PH
+                    </span>
                 </a>
 
-                <div class="hidden md:flex space-x-6 items-center">
-                    <a href="{% url 'home' %}" class="hover:text-green-200 transition">Home</a>
-                    
-                    <a href="{% url 'articles:article_list' %}" class="hover:text-green-200 transition">Articles</a> 
-                    
-                    <a href="{% url 'campaigns:campaign_list' %}" class="hover:text-green-200 transition">Campaigns</a>
-                    
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{% url 'home' %}"
+                        class="font-medium text-gray-600 hover:text-emerald-600 transition-colors {% if request.resolver_match.url_name == 'home' %}text-emerald-600{% endif %}">
+                        Home
+                    </a>
+                    <a href="{% url 'articles:article_list' %}"
+                        class="font-medium text-gray-600 hover:text-emerald-600 transition-colors {% if 'article' in request.resolver_match.url_name %}text-emerald-600{% endif %}">
+                        Articles
+                    </a>
+                    <a href="{% url 'campaigns:campaign_list' %}"
+                        class="font-medium text-gray-600 hover:text-emerald-600 transition-colors {% if 'campaign' in request.resolver_match.url_name %}text-emerald-600{% endif %}">
+                        Campaigns
+                    </a>
+
                     {% if user.is_authenticated %}
-                        {% if user.role == 'admin' %}
-                            <div class="relative group">
-                                <button class="hover:text-green-200 transition flex items-center">
-                                    Admin ▾
-                                </button>
-                                <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden group-hover:block z-50">
-                                    <a href="{% url 'users:admin_dashboard' %}" class="block px-4 py-2 text-gray-800 hover:bg-green-100">Dashboard</a>
-                                    <a href="{% url 'users:user_list' %}" class="block px-4 py-2 text-gray-800 hover:bg-green-100">Manage Users</a>
-                                    
-                                    <a href="{% url 'articles:article_create' %}" class="block px-4 py-2 text-gray-800 hover:bg-green-100">Create Article</a> 
-                                    
-                                    <a href="{% url 'campaigns:campaign_create' %}" class="block px-4 py-2 text-gray-800 hover:bg-green-100">Create Campaign</a> 
-                                </div>
-                            </div>
+                    <div class="flex items-center gap-4 pl-4 border-l border-gray-200">
+                        {% if user.is_staff %}
+                        <a href="{% url 'users:admin_dashboard' %}"
+                            class="px-4 py-2 text-sm font-medium text-purple-700 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
+                            Admin
+                        </a>
                         {% endif %}
 
-                        <div class="relative group">
-                            <button class="hover:text-green-200 transition flex items-center">
-                                👤 {{ user.username }} ▾
-                            </button>
-                            <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg hidden group-hover:block z-50">
-                                <a href="{% url 'users:user_dashboard' %}" class="block px-4 py-2 text-gray-800 hover:bg-green-100">
-                                    {% if user.role == 'admin' %}Admin Dashboard{% else %}Dashboard{% endif %}
-                                </a>
-                                <a href="{% url 'users:user_profile' user.username %}" class="block px-4 py-2 text-gray-800 hover:bg-green-100">Profile</a>
-                                <hr class="my-1">
-                                <a href="{% url 'users:logout' %}" class="block px-4 py-2 text-red-600 hover:bg-red-50">Logout</a> 
+                        <a href="{% url 'users:user_dashboard' %}" class="flex items-center gap-2 group">
+                            <div
+                                class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white text-sm font-bold shadow-md group-hover:shadow-lg transition-all">
+                                {{ user.username|first|upper }}
                             </div>
-                        </div>
-                    {% else %}
-                        <a href="{% url 'users:login' %}" class="hover:text-green-200 transition">Login</a>
-                        <a href="{% url 'users:register' %}" class="bg-green-600 px-4 py-2 rounded hover:bg-green-700 transition">
-                            Register
                         </a>
+
+                        <a href="{% url 'users:logout' %}"
+                            class="text-sm font-medium text-gray-500 hover:text-red-600 transition-colors">
+                            Logout
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="flex items-center gap-4 pl-4 border-l border-gray-200">
+                        <a href="{% url 'users:login' %}"
+                            class="font-medium text-gray-600 hover:text-emerald-600 transition-colors">
+                            Login
+                        </a>
+                        <a href="{% url 'users:register' %}"
+                            class="btn-glow px-5 py-2.5 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-all shadow-lg hover:shadow-emerald-500/30">
+                            Join Now
+                        </a>
+                    </div>
                     {% endif %}
                 </div>
 
-                <button id="mobile-menu-btn" class="md:hidden focus:outline-none">
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-btn" class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"></path>
                     </svg>
                 </button>
             </div>
 
-            <div id="mobile-menu" class="hidden md:hidden pb-4">
-                <a href="{% url 'home' %}" class="block py-2 hover:text-green-200">Home</a>
-                
-                <a href="{% url 'articles:article_list' %}" class="block py-2 hover:text-green-200">Articles</a> 
-                
-                <a href="{% url 'campaigns:campaign_list' %}" class="block py-2 hover:text-green-200">Campaigns</a> 
-                
-                {% if user.is_authenticated %}
-                    {% if user.role == 'admin' %}
-                        <a href="{% url 'users:admin_dashboard' %}" class="block py-2 hover:text-green-200">Admin Dashboard</a>
-                        <a href="{% url 'users:user_list' %}" class="block py-2 hover:text-green-200">Manage Users</a>
-                    {% else %}
-                        <a href="{% url 'users:user_dashboard' %}" class="block py-2 hover:text-green-200">Dashboard</a>
-                    {% endif %}
-                    <a href="{% url 'users:user_profile' user.username %}" class="block py-2 hover:text-green-200">Profile</a>
-                    <a href="{% url 'users:logout' %}" class="block py-2 hover:text-green-200">Logout</a> 
-                {% else %}
-                    <a href="{% url 'users:login' %}" class="block py-2 hover:text-green-200">Login</a>
-                    <a href="{% url 'users:register' %}" class="block py-2 hover:text-green-200">Register</a>
-                {% endif %}
+            <!-- Mobile Menu -->
+            <div id="mobile-menu"
+                class="hidden md:hidden border-t border-gray-100 bg-white/95 backdrop-blur-md absolute left-0 right-0 px-4 py-4 shadow-xl">
+                <div class="space-y-3">
+                    <a href="{% url 'home' %}"
+                        class="block py-2 px-4 rounded-lg hover:bg-emerald-50 text-gray-700 font-medium">Home</a>
+                    <a href="{% url 'articles:article_list' %}"
+                        class="block py-2 px-4 rounded-lg hover:bg-emerald-50 text-gray-700 font-medium">Articles</a>
+                    <a href="{% url 'campaigns:campaign_list' %}"
+                        class="block py-2 px-4 rounded-lg hover:bg-emerald-50 text-gray-700 font-medium">Campaigns</a>
+
+                    <div class="border-t border-gray-100 my-2 pt-2">
+                        {% if user.is_authenticated %}
+                        <div class="flex items-center px-4 py-2 gap-3 mb-2">
+                            <div
+                                class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold">
+                                {{ user.username|first|upper }}
+                            </div>
+                            <span class="font-medium text-gray-800">{{ user.username }}</span>
+                        </div>
+                        <a href="{% url 'users:user_dashboard' %}"
+                            class="block py-2 px-4 rounded-lg hover:bg-emerald-50 text-emerald-600 font-medium">Dashboard</a>
+                        {% if user.is_staff %}
+                        <a href="{% url 'users:admin_dashboard' %}"
+                            class="block py-2 px-4 rounded-lg hover:bg-purple-50 text-purple-600 font-medium">Admin
+                            Dashboard</a>
+                        {% endif %}
+                        <a href="{% url 'users:logout' %}"
+                            class="block py-2 px-4 rounded-lg hover:bg-red-50 text-red-600 font-medium">Logout</a>
+                        {% else %}
+                        <a href="{% url 'users:login' %}"
+                            class="block py-2 px-4 rounded-lg hover:bg-emerald-50 text-emerald-600 font-medium">Login</a>
+                        <a href="{% url 'users:register' %}"
+                            class="block mt-2 py-3 px-4 rounded-lg bg-emerald-600 text-white font-medium text-center">Join
+                            Movement</a>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
+    <div class="h-20"></div> <!-- Spacer for fixed navbar -->
+    {% endif %}
+    <!-- END: Conditional Navbar -->
 
+    <!-- Toast Notifications -->
     {% if messages %}
-    <div class="container mx-auto px-4 mt-4">
+    <div class="fixed top-24 right-4 z-50 flex flex-col gap-3 max-w-sm pointer-events-none">
         {% for message in messages %}
-        <div class="p-4 rounded mb-2 {% if message.tags == 'error' %}bg-red-100 text-red-800{% elif message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-800{% else %}bg-blue-100 text-blue-800{% endif %}">
-            {{ message }}
+        <div
+            class="toast-msg pointer-events-auto flex items-center gap-3 p-4 rounded-xl shadow-lg border backdrop-blur-md
+            {% if message.tags == 'error' %}bg-white/90 border-red-200 text-red-800{% elif message.tags == 'success' %}bg-white/90 border-green-200 text-green-800{% elif message.tags == 'warning' %}bg-white/90 border-yellow-200 text-yellow-800{% else %}bg-white/90 border-blue-200 text-blue-800{% endif %}">
+            <span class="text-xl">
+                {% if message.tags == 'error' %}
+                ⚠️
+                {% elif message.tags == 'success' %}
+                ✅
+                {% elif message.tags == 'warning' %}
+                🔔
+                {% else %}
+                ℹ️
+                {% endif %}
+            </span>
+            <p class="text-sm font-medium">{{ message }}</p>
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <main class="min-h-screen">
+    <!-- Main Content -->
+    <main class="flex-grow">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="bg-green-900 text-white py-8 mt-12">
-        <div class="container mx-auto px-4 text-center">
-            <p>&copy; 2025 EcoAware PH. All rights reserved.</p>
-            <p class="text-green-300 mt-2">Promoting Environmental Awareness in the Philippines</p>
+    <!-- START: Conditional Footer -->
+    {% if request.resolver_match.url_name != 'login' and request.resolver_match.url_name != 'register' %}
+    <footer class="bg-gray-900 text-white pt-16 pb-8 border-t border-gray-800">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Brand -->
+                <div class="col-span-1 md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <span class="text-3xl">🌿</span>
+                        <span class="text-2xl font-bold font-display text-white">EcoAware PH</span>
+                    </div>
+                    <p class="text-gray-400 leading-relaxed mb-6">
+                        Empowering communities to build a sustainable future through education, action, and
+                        collaboration.
+                    </p>
+                    <div class="flex gap-4">
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-emerald-600 transition-colors">📘</a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-emerald-600 transition-colors">🐦</a>
+                        <a href="#"
+                            class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-emerald-600 transition-colors">📸</a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="text-lg font-bold mb-6 font-display">Explore</h3>
+                    <ul class="space-y-3">
+                        <li><a href="{% url 'home' %}"
+                                class="text-gray-400 hover:text-emerald-400 transition-colors">Home</a></li>
+                        <li><a href="{% url 'articles:article_list' %}"
+                                class="text-gray-400 hover:text-emerald-400 transition-colors">Articles</a></li>
+                        <li><a href="{% url 'campaigns:campaign_list' %}"
+                                class="text-gray-400 hover:text-emerald-400 transition-colors">Campaigns</a></li>
+                        <li><a href="{% url 'about' %}"
+                                class="text-gray-400 hover:text-emerald-400 transition-colors">About Us</a></li>
+                    </ul>
+                </div>
+
+                <!-- Resources -->
+                <div>
+                    <h3 class="text-lg font-bold mb-6 font-display">Resources</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Help Center</a>
+                        </li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Privacy
+                                Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Terms of
+                                Service</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-emerald-400 transition-colors">Contact
+                                Support</a></li>
+                    </ul>
+                </div>
+
+                <!-- Empty column to maintain grid layout or just remove it -->
+            </div>
+
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
+                <p>&copy; {% now "Y" %} EcoAware PH. All rights reserved.</p>
+            </div>
         </div>
     </footer>
+    {% endif %}
+    <!-- END: Conditional Footer -->
 
     <script>
-        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
+        // Mobile Menu Toggle
+        document.getElementById('mobile-menu-btn')?.addEventListener('click', function () {
             const menu = document.getElementById('mobile-menu');
             menu.classList.toggle('hidden');
         });
+
+        // Hide Toasts after 5 seconds
+        setTimeout(() => {
+            const toasts = document.querySelectorAll('.toast-msg');
+            toasts.forEach(t => {
+                t.style.opacity = '0';
+                t.style.transform = 'translateY(-20px)';
+                t.style.transition = 'all 0.5s ease';
+                setTimeout(() => t.remove(), 500);
+            });
+        }, 5000);
     </script>
+    {% include 'includes/chat_widget.html' %}
 </body>
+
 </html>

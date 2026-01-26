@@ -1,8 +1,191 @@
-{% extends 'layouts/single_column.html' %} 
+{% extends 'base.html' %}
 
-{% block title %}User Dashboard{% endblock %}
+{% block title %}Dashboard - EcoAware PH{% endblock %}
 
-{% block single_column_content %}
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">Welcome, {{ request.user.username }}</h1>
-    <p>Your dashboard content goes here.</p>
-{% endblock single_column_content %}
+{% block content %}
+<style>
+    .stat-card {
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+    }
+</style>
+
+<!-- Dashboard Header -->
+<section class="bg-gradient-to-r from-emerald-600 to-teal-600 text-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center gap-4">
+            <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm text-3xl">
+                {{ user.username|first|upper }}
+            </div>
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold">Welcome back, {{ user.username }}!</h1>
+                <p class="text-emerald-100 mt-1">Here's your eco-warrior dashboard</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Cards -->
+<section class="py-8 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 -mt-16">
+            <div class="stat-card bg-white rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Articles Written</p>
+                        <p class="text-3xl font-bold text-emerald-600 mt-1">{{ total_articles|default:0 }}</p>
+                    </div>
+                    <div class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center text-2xl">
+                        📝
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-600 text-sm font-medium">Total Views</p>
+                        <p class="text-3xl font-bold text-teal-600 mt-1">{{ total_views|default:0 }}</p>
+                    </div>
+                    <div class="w-14 h-14 bg-teal-100 rounded-full flex items-center justify-center text-2xl">
+                        👁️
+                    </div>
+                </div>
+            </div>
+
+            <div class="stat-card bg-white rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-1">
+                            <p class="text-gray-600 text-sm font-medium">Impact Points</p>
+                            <div class="group relative cursor-help">
+                                <span class="text-gray-400 text-xs">ⓘ</span>
+                                <div
+                                    class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-800 text-white text-xs rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10">
+                                    Total Articles + Total Views
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-bold text-cyan-600 mt-1">{{ impact_points|default:0 }}</p>
+                    </div>
+                    <div class="w-14 h-14 bg-cyan-100 rounded-full flex items-center justify-center text-2xl">
+                        ⭐
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="py-8">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Left Column -->
+            <div class="lg:col-span-2">
+
+                <!-- Quick Actions -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-8">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4">Quick Actions</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        {% if user.is_staff %}
+                        <a href="{% url 'articles:article_create' %}"
+                            class="flex items-center gap-3 p-4 bg-emerald-50 hover:bg-emerald-100 rounded-xl transition-colors">
+                            <span class="text-2xl">📝</span>
+                            <span class="font-medium text-emerald-700">Write Article</span>
+                        </a>
+                        {% endif %}
+                        <a href="{% url 'campaigns:campaign_list' %}"
+                            class="flex items-center gap-3 p-4 bg-teal-50 hover:bg-teal-100 rounded-xl transition-colors">
+                            <span class="text-2xl">🎯</span>
+                            <span class="font-medium text-teal-700">Join Campaign</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Your Articles -->
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-800">Your Recent Articles</h2>
+                        <a href="{% url 'articles:article_list' %}"
+                            class="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
+                            View All →
+                        </a>
+                    </div>
+
+                    {% if user_articles %}
+                    <div class="space-y-4">
+                        {% for article in user_articles %}
+                        <div class="border-l-4 border-emerald-500 pl-4 py-2 hover:bg-gray-50 transition-colors">
+                            <h3 class="font-semibold text-gray-800">{{ article.title|truncatewords:10 }}</h3>
+                            <div class="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                                <span>👁️ {{ article.views }} views</span>
+                                <span>•</span>
+                                <span>{{ article.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="mt-2 space-x-2">
+                                <a href="{{ article.get_absolute_url }}"
+                                    class="text-blue-600 text-sm hover:underline">View</a>
+                                <a href="{% url 'articles:article_update' article.slug %}"
+                                    class="text-emerald-600 text-sm hover:underline">Edit</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-12">
+                        <div class="text-5xl mb-4">📄</div>
+                        <p class="text-gray-500">You haven't written any articles yet.</p>
+                        {% if user.is_staff %}
+                        <a href="{% url 'articles:article_create' %}"
+                            class="mt-4 inline-flex items-center px-6 py-3 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-colors">
+                            Write Your First Article
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+
+            <!-- Right Sidebar -->
+            <div class="lg:col-span-1">
+
+                <!-- Profile Card -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <div class="text-center">
+                        <div
+                            class="w-24 h-24 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full mx-auto flex items-center justify-center text-white text-3xl font-bold mb-4">
+                            {{ user.username|first|upper }}
+                        </div>
+                        <h3 class="font-bold text-gray-800">{{ user.username }}</h3>
+                        <p class="text-gray-500 text-sm">{{ user.email }}</p>
+                        <a href="{% url 'users:user_profile' user.username %}"
+                            class="mt-4 inline-block px-6 py-2 border-2 border-emerald-600 text-emerald-600 font-medium rounded-xl hover:bg-emerald-600 hover:text-white transition-colors">
+                            View Profile
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Activity Tips -->
+                <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg p-6 text-white">
+                    <h3 class="font-bold text-lg mb-3">💡 Eco Tips</h3>
+                    <ul class="space-y-2 text-sm text-emerald-50">
+                        <li>✓ Share your environmental journey</li>
+                        <li>✓ Join active campaigns</li>
+                        <li>✓ Engage with the community</li>
+                        <li>✓ Spread awareness</li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,8 @@
+Django
+gunicorn
+psycopg2-binary
+dj-database-url
+whitenoise
+django-ckeditor-5
+django-extensions
+Pillow

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Credentials - EcoAware PH{% endblock %}
+
+{% block content %}
+<section class="py-16 bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4">
+        <div class="max-w-md mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 px-8 py-6 text-white text-center">
+                <h1 class="text-2xl font-bold">Edit Credentials</h1>
+                <p class="text-emerald-100 text-sm mt-1">Update your profile information</p>
+            </div>
+
+            <div class="p-8">
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                    <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+
+                    {% for field in form %}
+                    <div class="mb-6">
+                        <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-2">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <p class="mt-1 text-sm text-red-500">{{ field.errors.0 }}</p>
+                        {% endif %}
+                        {% if field.help_text %}
+                        <p class="mt-1 text-xs text-gray-500">{{ field.help_text }}</p>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+
+                    <div class="mb-6 pt-2 border-t border-gray-100">
+                        <a href="{% url 'users:password_change' %}"
+                            class="text-sm font-medium text-emerald-600 hover:text-emerald-700 hover:underline">
+                            🔒 Change Password
+                        </a>
+                    </div>
+
+                    <div class="flex gap-4 pt-4">
+                        <button type="submit"
+                            class="flex-1 px-6 py-3 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors shadow-md">
+                            Save Changes
+                        </button>
+                        <a href="{% url 'users:user_profile' user.username %}"
+                            class="px-6 py-3 bg-white text-gray-700 font-medium rounded-xl border border-gray-200 hover:bg-gray-50 text-center transition-colors">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

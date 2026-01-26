@@ -4,79 +4,334 @@
 
 {% block content %}
 <style>
-   
-    .hero-section {
-        background-color: #e6f7ef;
-        border-radius: 0 !important; 
-        padding-top: 6rem !important;
-        padding-bottom: 6rem !important;
+    /* Hero Section */
+    .hero-gradient {
+        background: linear-gradient(135deg, #059669 0%, #0d9488 50%, #14b8a6 100%);
+        position: relative;
+        overflow: hidden;
     }
 
-    .hero-section h1 {
-        color: #198754; 
-        font-weight: 700;
+    .hero-gradient::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+        animation: float 6s ease-in-out infinite;
     }
 
- 
-    .what-we-do-icon {
-        transition: transform 0.3s ease-in-out;
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+
+        50% {
+            transform: translate(-20px, 20px) rotate(5deg);
+        }
     }
 
-    .what-we-do-icon:hover {
-        transform: translateY(-5px); 
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    .delay-100 {
+        animation-delay: 0.1s;
+    }
+
+    .delay-200 {
+        animation-delay: 0.2s;
+    }
+
+    .delay-300 {
+        animation-delay: 0.3s;
+    }
+
+    /* Glassmorphism Card */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .glass-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Stat Card */
+    .stat-card {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: scale(1.05);
+    }
+
+    /* CTA Section */
+    .cta-gradient {
+        background: linear-gradient(135deg, #065f46 0%, #047857 100%);
+    }
+
+    /* Floating Elements */
+    .floating {
+        animation: floating 3s ease-in-out infinite;
+    }
+
+    @keyframes floating {
+
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
     }
 </style>
 
-<header class="p-5 mb-4 rounded-3 text-center hero-section">
-    <div class="container-fluid py-5">
-        <h1 class="display-5 fw-bold">Be the Change for the Philippines</h1>
-        <p class="fs-4 text-muted mb-5">Empowering Filipinos with knowledge and tools for environmental action and sustainability.</p>
-        
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            {% include 'atoms/button.html' with url='articles:article_list' text='Read Our Latest Articles' variant='success' size='btn-lg' icon='book' %}
-            
-            {% include 'atoms/button.html' with url='users:register' text='Join the Community' variant='outline-success' size='btn-lg' icon='person-plus' %}
-        </div>
-    </div>
-</header>
+<!-- Hero Section -->
+<section class="hero-gradient text-white py-20 md:py-32">
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+            <div class="animate-fade-in-up opacity-0">
+                <span class="inline-block px-4 py-2 bg-white/20 rounded-full text-sm font-medium mb-6 backdrop-blur-sm">
+                    🌿 Your Gateway to Environmental Action
+                </span>
+            </div>
 
-<div class="container my-5">
-    <h2 class="mb-5 text-center fw-bold">What We Do</h2>
-    <div class="row text-center mb-5">
-        
-        <div class="col-md-4 mb-4 what-we-do-icon">
-            {% include 'atoms/icon.html' with name='lightbulb' extra_classes='fs-1 text-primary' %}
-            <h4 class="mt-3 text-success">Educate</h4>
-            <p class="text-secondary">Provide evidence-based articles and resources on local environmental challenges.</p>
+            <h1 class="text-4xl md:text-6xl font-bold mb-6 animate-fade-in-up opacity-0 delay-100">
+                Empowering Filipinos for a<br>
+                <span class="text-emerald-200">Sustainable Future</span>
+            </h1>
+
+            <p class="text-xl md:text-2xl text-emerald-100 mb-10 animate-fade-in-up opacity-0 delay-200">
+                Join thousands of eco-warriors making a difference. Discover articles,
+                participate in campaigns, and be part of the change.
+            </p>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up opacity-0 delay-300">
+                <a href="{% url 'campaigns:campaign_list' %}"
+                    class="px-8 py-4 bg-white text-emerald-700 font-semibold rounded-xl hover:bg-emerald-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                    🎯 Explore Campaigns
+                </a>
+                <a href="{% url 'articles:article_list' %}"
+                    class="px-8 py-4 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-500 transition-all border-2 border-emerald-400 hover:border-emerald-300">
+                    📚 Read Articles
+                </a>
+            </div>
         </div>
-        
-        <div class="col-md-4 mb-4 what-we-do-icon">
-            {% include 'atoms/icon.html' with name='hand-heart' extra_classes='fs-1 text-danger' %}
-            <h4 class="mt-3 text-success">Mobilize</h4>
-            <p class="text-secondary">Run campaigns for clean-ups, donations, and policy advocacy.</p>
+
+        <!-- Floating decorative elements -->
+        <div class="absolute top-20 left-10 text-6xl floating opacity-30 hidden md:block">🌱</div>
+        <div class="absolute bottom-20 right-10 text-5xl floating opacity-30 hidden md:block"
+            style="animation-delay: 1s;">🌍</div>
+        <div class="absolute top-1/2 right-20 text-4xl floating opacity-20 hidden lg:block"
+            style="animation-delay: 2s;">♻️</div>
+    </div>
+</section>
+
+<!-- Stats Section removed as per request -->
+
+<!-- Featured Campaigns Section -->
+{% if featured_campaigns %}
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-10">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800">🎯 Featured Campaigns</h2>
+                <p class="text-gray-600 mt-2">Join these active environmental initiatives</p>
+            </div>
+            <a href="{% url 'campaigns:campaign_list' %}"
+                class="hidden md:inline-flex items-center px-6 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors">
+                View All →
+            </a>
         </div>
-        
-        <div class="col-md-4 mb-4 what-we-do-icon">
-            {% include 'atoms/icon.html' with name='chat-dots' extra_classes='fs-1 text-info' %}
-            <h4 class="mt-3 text-success">Connect</h4>
-            <p class="text-secondary">Build a community of eco-conscious users, volunteers, and organizations.</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for campaign in featured_campaigns %}
+            <div class="glass-card rounded-2xl overflow-hidden shadow-lg">
+                {% if campaign.image %}
+                <img src="{{ campaign.image.url }}" alt="{{ campaign.title }}" class="w-full h-48 object-cover">
+                {% else %}
+                <div
+                    class="w-full h-48 bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center">
+                    <span class="text-6xl">🌿</span>
+                </div>
+                {% endif %}
+
+                <div class="p-6">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
+                            Active Campaign
+                        </span>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">{{ campaign.title }}</h3>
+                    <p class="text-gray-600 mb-4">{{ campaign.description|striptags|truncatewords:15 }}</p>
+
+                    <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
+                        <span>🎯 Goal: ₱{{ campaign.goal }}</span>
+                        <span>📅 {{ campaign.end_date|date:"M d, Y" }}</span>
+                    </div>
+
+                    <a href="{{ campaign.get_absolute_url }}"
+                        class="block w-full text-center py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors">
+                        Learn More
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="mt-8 text-center md:hidden">
+            <a href="{% url 'campaigns:campaign_list' %}"
+                class="inline-flex items-center px-6 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors">
+                View All Campaigns →
+            </a>
         </div>
     </div>
-    
-    <hr class="my-5">
-    
-    <h2 class="mt-5 mb-4 text-center fw-bold">Featured Articles</h2>
-    <div class="row">
-        {% for article in featured_articles %}
-            <div class="col-md-6 col-lg-4 mb-4">
-                {# Assumes article_card is styled with shadows/hover effects #}
-                {% include 'molecules/article_card.html' with article=article is_admin=False %}
+</section>
+{% endif %}
+
+<!-- Featured Articles Section -->
+{% if featured_articles %}
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center mb-10">
+            <div>
+                <h2 class="text-3xl font-bold text-gray-800">📚 Featured Articles</h2>
+                <p class="text-gray-600 mt-2">Curated content on environmental awareness</p>
             </div>
-        {% empty %}
-            <div class="col-12 text-center">
-                <p class="text-muted p-5 border rounded">🌍 Loading our top stories...</p>
+            <a href="{% url 'articles:article_list' %}"
+                class="hidden md:inline-flex items-center px-6 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors">
+                Browse All →
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for article in featured_articles %}
+            <div class="glass-card rounded-2xl overflow-hidden shadow-lg">
+                {% if article.featured_image %}
+                <img src="{{ article.featured_image.url }}" alt="{{ article.title }}" class="w-full h-48 object-cover">
+                {% else %}
+                <div
+                    class="w-full h-48 bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center">
+                    <span class="text-6xl">📄</span>
+                </div>
+                {% endif %}
+
+                <div class="p-6">
+                    {% if article.category %}
+                    <span class="px-3 py-1 bg-teal-100 text-teal-700 text-xs font-semibold rounded-full">
+                        {{ article.category.name }}
+                    </span>
+                    {% endif %}
+
+                    <h3 class="text-xl font-bold text-gray-800 mt-3 mb-2">{{ article.title }}</h3>
+                    <p class="text-gray-600 mb-4">{{ article.excerpt|truncatewords:15 }}</p>
+
+                    <div class="flex justify-between items-center text-sm text-gray-500">
+                        <span>👁️ {{ article.views }} views</span>
+                        <span>{{ article.created_at|date:"M d, Y" }}</span>
+                    </div>
+
+                    <a href="{{ article.get_absolute_url }}"
+                        class="mt-4 block w-full text-center py-3 border-2 border-emerald-600 text-emerald-600 font-medium rounded-lg hover:bg-emerald-600 hover:text-white transition-colors">
+                        Read Article
+                    </a>
+                </div>
             </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-</div>
+</section>
+{% endif %}
+
+<!-- Recent Articles Section -->
+{% if recent_articles %}
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-gray-800">🕒 Latest Updates</h2>
+            <p class="text-gray-600 mt-2">Stay informed with our newest articles</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for article in recent_articles %}
+            <a href="{{ article.get_absolute_url }}"
+                class="block bg-white rounded-xl p-6 shadow-md hover:shadow-xl transition-all hover:-translate-y-1">
+                <div class="flex items-start gap-4">
+                    {% if article.featured_image %}
+                    <img src="{{ article.featured_image.url }}" alt="{{ article.title }}"
+                        class="w-20 h-20 object-cover rounded-lg flex-shrink-0">
+                    {% else %}
+                    <div
+                        class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span class="text-2xl">📰</span>
+                    </div>
+                    {% endif %}
+
+                    <div class="flex-1 min-w-0">
+                        <h3 class="font-semibold text-gray-800 mb-1 line-clamp-2">{{ article.title }}</h3>
+                        <p class="text-sm text-gray-500">{{ article.created_at|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="mt-10 text-center">
+            <a href="{% url 'articles:article_list' %}"
+                class="inline-flex items-center px-8 py-4 bg-white border-2 border-emerald-600 text-emerald-600 font-semibold rounded-xl hover:bg-emerald-600 hover:text-white transition-all">
+                📚 Browse All Articles
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Call to Action Section -->
+<section class="cta-gradient py-20">
+    <div class="container mx-auto px-4 text-center">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+                Ready to Make a Difference?
+            </h2>
+            <p class="text-xl text-emerald-100 mb-10">
+                Join our community of environmental advocates. Together, we can create
+                a greener, more sustainable Philippines for future generations.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'campaigns:campaign_list' %}"
+                    class="px-8 py-4 bg-white text-emerald-700 font-semibold rounded-xl hover:bg-emerald-50 transition-all shadow-lg">
+                    🎯 Join a Campaign
+                </a>
+                <a href="{% url 'articles:article_list' %}"
+                    class="px-8 py-4 bg-emerald-500 text-white font-semibold rounded-xl hover:bg-emerald-400 transition-all border-2 border-emerald-400">
+                    📖 Start Learning
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
 {% endblock %}

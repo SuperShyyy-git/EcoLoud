@@ -1,68 +1,124 @@
 {% extends 'base.html' %}
 
-{% block title %}Profile - {{ user.username }}{% endblock %}
+{% block title %}{{ profile_user.username }} - EcoAware PH{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">
-    <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
-        <h1 class="text-3xl font-bold text-green-800 mb-6">User Profile</h1>
-        
-        <div class="space-y-4">
-            <div>
-                <label class="text-gray-700 font-semibold">Username:</label>
-                <p class="text-gray-900">{{ user.username }}</p>
-            </div>
-            
-            <div>
-                <label class="text-gray-700 font-semibold">Email:</label>
-                <p class="text-gray-900">{{ user.email }}</p>
-            </div>
-            
-            <div>
-                <label class="text-gray-700 font-semibold">Full Name:</label>
-                <p class="text-gray-900">{{ user.get_full_name|default:"Not provided" }}</p>
-            </div>
-            
-            <div>
-                <label class="text-gray-700 font-semibold">Role:</label>
-                <p class="text-gray-900">
-                    <span class="px-3 py-1 rounded-full text-sm {% if user.role == 'ADMIN' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %}">
-                        {{ user.get_role_display }}
-                    </span>
-                </p>
-            </div>
-            
-            {% if user.bio %}
-            <div>
-                <label class="text-gray-700 font-semibold">Bio:</label>
-                <p class="text-gray-900">{{ user.bio }}</p>
-            </div>
-            {% endif %}
-            
-            {% if user.phone_number %}
-            <div>
-                <label class="text-gray-700 font-semibold">Phone:</label>
-                <p class="text-gray-900">{{ user.phone_number }}</p>
-            </div>
-            {% endif %}
-            
-            <div>
-                <label class="text-gray-700 font-semibold">Member Since:</label>
-                <p class="text-gray-900">{{ user.date_joined|date:"F d, Y" }}</p>
-            </div>
-        </div>
-        
-        <div class="mt-8 flex gap-4">
-            <a href="{% url 'users:user_dashboard' %}" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
-                Back to Dashboard
-            </a>
+<style>
+    .profile-hero {
+        background: linear-gradient(135deg, #059669 0%, #0d9488 50%, #14b8a6 100%);
+    }
+</style>
 
-            {% if request.user.is_staff or request.user == user %}
-            <a href="{% url 'users:user_edit' user.id %}" class="bg-gray-600 text-white px-6 py-2 rounded hover:bg-gray-700">
-                Edit Profile
-            </a>
-            {% endif %}
+<!-- Profile Hero -->
+<section class="profile-hero text-white py-16">
+    <div class="container mx-auto px-4">
+        <div class="flex flex-col md:flex-row items-center gap-6">
+            <div
+                class="w-32 h-32 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm text-5xl font-bold">
+                {{ profile_user.username|first|upper }}
+            </div>
+            <div class="text-center md:text-left">
+                <h1 class="text-4xl font-bold mb-2">{{ profile_user.username }}</h1>
+                <p class="text-emerald-100">{{ profile_user.email }}</p>
+                <p class="text-emerald-200 text-sm mt-2">Member since {{ profile_user.date_joined|date:"F Y" }}</p>
+            </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- Profile Content -->
+<section class="py-12 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- Stats Cards -->
+            <div class="lg:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                    <div class="text-4xl mb-2">📝</div>
+                    <div class="text-3xl font-bold text-emerald-600">{{ total_articles|default:0 }}</div>
+                    <div class="text-gray-600">Articles</div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                    <div class="text-4xl mb-2">🎯</div>
+                    <div class="text-3xl font-bold text-teal-600">0</div>
+                    <div class="text-gray-600">Campaigns Joined</div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-lg text-center">
+                    <div class="text-4xl mb-2">⭐</div>
+                    <div class="text-3xl font-bold text-cyan-600">{{ impact_points|default:0 }}</div>
+                    <div class="text-gray-600">Impact Points</div>
+                </div>
+            </div>
+
+            <!-- About Section -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6">About</h2>
+                    <div class="space-y-4 text-gray-600">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">👤</span>
+                            <div>
+                                <p class="text-sm text-gray-500">Username</p>
+                                <p class="font-medium text-gray-800">{{ profile_user.username }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">📧</span>
+                            <div>
+                                <p class="text-sm text-gray-500">Email</p>
+                                <p class="font-medium text-gray-800">{{ profile_user.email }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">📅</span>
+                            <div>
+                                <p class="text-sm text-gray-500">Joined</p>
+                                <p class="font-medium text-gray-800">{{ profile_user.date_joined|date:"F d, Y" }}</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">✅</span>
+                            <div>
+                                <p class="text-sm text-gray-500">Status</p>
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                                    {% if profile_user.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4">Eco Warrior Badge</h3>
+                    <div class="text-center">
+                        <div class="text-6xl mb-3">🏆</div>
+                        <p class="text-gray-600">Active Contributor</p>
+                    </div>
+                </div>
+
+                {% if user == profile_user %}
+                <a href="{% url 'users:edit_profile' %}"
+                    class="block w-full text-center py-3 border-2 border-emerald-600 text-emerald-600 font-medium rounded-xl hover:bg-emerald-50 transition-colors mb-3">
+                    ✏️ Edit Credentials
+                </a>
+                <a href="{% url 'users:user_dashboard' %}"
+                    class="block w-full text-center py-3 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-colors mb-3">
+                    Go to Dashboard
+                </a>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</section>
 {% endblock %}
