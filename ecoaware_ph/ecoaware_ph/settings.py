@@ -27,9 +27,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
 
+    'cloudinary_storage',
     'django.contrib.staticfiles',
     
-    'cloudinary_storage',
     'cloudinary',
 
     
@@ -110,13 +110,6 @@ CLOUDINARY_STORAGE = {
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-# Debug Cloudinary Configuration
-print("--- CLOUDINARY DEBUG ---")
-print(f"Cloud Name: {CLOUDINARY_STORAGE.get('CLOUD_NAME')}")
-print(f"API Key Present: {bool(CLOUDINARY_STORAGE.get('API_KEY'))}")
-print(f"API Secret Present: {bool(CLOUDINARY_STORAGE.get('API_SECRET'))}")
-print(f"DEFAULT_FILE_STORAGE: {DEFAULT_FILE_STORAGE}")
-print("------------------------")
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
