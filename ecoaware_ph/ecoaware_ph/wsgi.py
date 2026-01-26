@@ -11,6 +11,13 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
+# Load .env file
+try:
+    import dotenv
+    dotenv.read_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env'))
+except ImportError:
+    pass
+
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ecoaware_ph.settings')
 
 application = get_wsgi_application()

@@ -6,6 +6,13 @@ import sys
 
 def main():
     """Run administrative tasks."""
+    # Load .env file
+    try:
+        import dotenv
+        dotenv.read_dotenv()
+    except ImportError:
+        pass
+        
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ecoaware_ph.settings')
     try:
         from django.core.management import execute_from_command_line
