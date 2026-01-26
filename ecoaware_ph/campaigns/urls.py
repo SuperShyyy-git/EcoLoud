@@ -16,4 +16,5 @@ urlpatterns = [
     
     # Join
     path('<int:pk>/join/', views.join_campaign, name='join_campaign'),
+    path('<int:pk>/participants/', views.campaign_participants, name='campaign_participants'),
 ]

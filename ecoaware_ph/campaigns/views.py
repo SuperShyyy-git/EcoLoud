@@ -127,3 +127,12 @@ def join_campaign(request, pk):
             messages.success(request, f'You have successfully joined the campaign "{campaign.title}"!')
             
     return redirect('campaigns:campaign_detail', pk=pk)
+
+@login_required
+def campaign_participants(request, pk):
+    campaign = get_object_or_404(Campaign, pk=pk)
+    participants = campaign.participants.all()
+    return render(request, 'organisms/campaign_participants.html', {
+        'campaign': campaign,
+        'participants': participants
+    })

@@ -252,32 +252,36 @@
             <!-- Participants List -->
             <div class="bg-white rounded-2xl shadow-lg p-6">
                 <h3 class="font-bold text-gray-800 mb-4">Recent Participants</h3>
-                {% if campaign.participants.exists %}
-                <div class="flex -space-x-3 overflow-hidden mb-3">
-                    {% for participant in campaign.participants.all|slice:":5" %}
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border-2 border-white flex items-center justify-center text-white text-xs font-bold"
-                        title="{{ participant.username }}">
-                        {{ participant.username.0|upper }}
+                <a href="{% url 'campaigns:campaign_participants' campaign.pk %}"
+                    class="block hover:bg-gray-50 transition-colors rounded-xl -m-2 p-2 group">
+                    {% if campaign.participants.exists %}
+                    <div class="flex -space-x-3 overflow-hidden mb-3">
+                        {% for participant in campaign.participants.all|slice:":5" %}
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 border-2 border-white flex items-center justify-center text-white text-xs font-bold"
+                            title="{{ participant.username }}">
+                            {{ participant.username.0|upper }}
+                        </div>
+                        {% endfor %}
+                        {% if campaign.participants.count > 5 %}
+                        <div
+                            class="w-10 h-10 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-gray-600 text-xs font-bold">
+                            +{{ campaign.participants.count|add:"-5" }}
+                        </div>
+                        {% endif %}
                     </div>
-                    {% endfor %}
-                    {% if campaign.participants.count > 5 %}
-                    <div
-                        class="w-10 h-10 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-gray-600 text-xs font-bold">
-                        +{{ campaign.participants.count|add:"-5" }}
+                    <p class="text-sm text-gray-500 group-hover:text-emerald-600 transition-colors">
+                        {% with count=campaign.participants.count %}
+                        {{ count }} person{{ count|pluralize }} joined this campaign
+                        {% endwith %}
+                        <span class="text-xs ml-1">→</span>
+                    </p>
+                    {% else %}
+                    <div class="text-center py-4">
+                        <span class="text-4xl mb-2 block">👋</span>
+                        <p class="text-gray-500 text-sm">Be the first to join!</p>
                     </div>
                     {% endif %}
-                </div>
-                <p class="text-sm text-gray-500">
-                    {% with count=campaign.participants.count %}
-                    {{ count }} person{{ count|pluralize }} joined this campaign
-                    {% endwith %}
-                </p>
-                {% else %}
-                <div class="text-center py-4">
-                    <span class="text-4xl mb-2 block">👋</span>
-                    <p class="text-gray-500 text-sm">Be the first to join!</p>
-                </div>
-                {% endif %}
+                </a>
             </div>
 
         </div>
