@@ -47,6 +47,9 @@
                                 <div class="field-wrapper">
                                     {{ field }}
                                 </div>
+                                {% if field.help_text %}
+                                <p class="text-sm text-gray-500 mt-2">{{ field.help_text }}</p>
+                                {% endif %}
                                 {% endif %}
                             </div>
 

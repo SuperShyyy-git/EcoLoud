@@ -80,27 +80,25 @@
             <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Campaign Goals</h2>
 
+                {% if campaign.goals %}
                 <div class="space-y-4">
+                    {% for goal in campaign.goals %}
                     <div class="flex items-start gap-4">
                         <div class="w-10 h-10 bg-teal-100 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span class="text-xl">🌱</span>
+                            <span class="text-xl">{{ goal.icon }}</span>
                         </div>
-                        <div>
-                            <h3 class="font-semibold text-gray-800 mb-1">Environmental Impact</h3>
-                            <p class="text-gray-600">Plant 500+ trees and restore natural habitats</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start gap-4">
-                        <div class="w-10 h-10 bg-cyan-100 rounded-full flex items-center justify-center flex-shrink-0">
-                            <span class="text-xl">👥</span>
-                        </div>
-                        <div>
-                            <h3 class="font-semibold text-gray-800 mb-1">Community Engagement</h3>
-                            <p class="text-gray-600">Engage 200+ volunteers in hands-on activities</p>
+                        <div class="flex-1">
+                            <p class="text-gray-700 leading-relaxed">{{ goal.description }}</p>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
+                {% else %}
+                <div class="text-center py-8">
+                    <span class="text-5xl mb-3 block">🎯</span>
+                    <p class="text-gray-500">No specific goals defined yet.</p>
+                </div>
+                {% endif %}
             </div>
 
             <!-- Timeline/Updates -->
